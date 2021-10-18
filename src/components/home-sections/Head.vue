@@ -68,6 +68,7 @@
     rgba(182, 202, 196, 1) 100%
   );
   position: relative;
+  overflow: hidden;
 
   @include media-breakpoint-up(lg) {
     padding-top: 8rem;
@@ -101,7 +102,7 @@
     }
 
     @media screen and (min-width: 2000px) {
-      background-position: -10rem 100%;
+      background-position: 10rem 100%;
     }
   }
 
@@ -142,6 +143,12 @@
 
   &_desc {
     color: #4d1e37;
+    position: relative;
+
+    @media screen and (min-width: 2000px) {
+      top: -10rem;
+      right: -18rem;
+    }
 
     button {
       background-color: transparent;

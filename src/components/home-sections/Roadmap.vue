@@ -15,10 +15,6 @@ const scrollVideo = () => {
       (bound.value.scrollHeight - window.innerHeight)
     const percentScrolled = Math.min(Math.max(rawPercentScrolled, 0), 1)
 
-    // if (rawPercentScrolled > -0.1 && rawPercentScrolled < 1.3) {
-    //   video.value.style.top = `${(rawPercentScrolled / 2) * 100}%`
-    // }
-
     video.value.currentTime = video.value.duration * percentScrolled
   }
   requestAnimationFrame(scrollVideo)
@@ -122,13 +118,9 @@ onMounted(() => {
         <div class="col-5 d-none d-lg-block">
           <div class="home__roadmap_anim h-100">
             <div>
-              <video
-                ref="video"
-                src="/home/anim.mp4"
-                preload=""
-                muted="true"
-                class=""
-              ></video>
+              <video ref="video" preload="" muted="true" class="">
+                <source src="/home/anim.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </div>
