@@ -38,7 +38,8 @@ const colors = [
       }"
       :speed="2000"
     >
-      <swiper-slide
+      <component
+        :is="SwiperSlide"
         v-for="i in 13"
         :key="i"
         :style="{ backgroundColor: colors[i] }"
@@ -47,7 +48,7 @@ const colors = [
           class="home__voodollz_item"
           :style="{ backgroundImage: `url(/voodollz/${i}.png)` }"
         ></div>
-      </swiper-slide>
+      </component>
     </swiper>
   </div>
 </template>

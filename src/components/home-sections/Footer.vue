@@ -15,7 +15,7 @@
         </div>
         <ul class="home__footer_nav">
           <li>
-            <router-link to="/">Home</router-link>
+            <a href="#">Home</a>
           </li>
           <li>
             <a href="#">Terms & Conditions</a>
