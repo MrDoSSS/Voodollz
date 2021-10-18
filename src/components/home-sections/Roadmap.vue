@@ -15,8 +15,8 @@ const scrollVideo = () => {
       (bound.value.scrollHeight - window.innerHeight)
     const percentScrolled = Math.min(Math.max(rawPercentScrolled, 0), 1)
 
-    // if (rawPercentScrolled > -0.1 && rawPercentScrolled < 1.5) {
-    //   video.value.style.top = `${(rawPercentScrolled / 1.7) * 100}%`
+    // if (rawPercentScrolled > -0.1 && rawPercentScrolled < 1.3) {
+    //   video.value.style.top = `${(rawPercentScrolled / 2) * 100}%`
     // }
 
     video.value.currentTime = video.value.duration * percentScrolled
@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="home__roadmap" id="roadmap">
+  <div class="home__roadmap" id="roadmap" ref="bound">
     <div class="custom-container">
       <div class="row gx-lg-3 gx-xl-5">
         <div class="col-12 col-lg-7">
@@ -120,13 +120,16 @@ onMounted(() => {
           </div>
         </div>
         <div class="col-5 d-none d-lg-block">
-          <div class="home__roadmap_anim" ref="bound">
-            <video
-              ref="video"
-              src="/home/anim.mp4"
-              preload=""
-              muted="true"
-            ></video>
+          <div class="home__roadmap_anim h-100">
+            <div>
+              <video
+                ref="video"
+                src="/home/anim.mp4"
+                preload=""
+                muted="true"
+                class=""
+              ></video>
+            </div>
           </div>
         </div>
       </div>
@@ -359,15 +362,20 @@ onMounted(() => {
   }
 
   &_anim {
-    background: #dbfae6;
-    border-radius: 30rem;
-    height: 100%;
-    overflow: hidden;
     position: relative;
+    background-color: #dbfae6;
+    border-radius: 30rem;
+
+    div {
+      position: sticky;
+      top: -15rem;
+    }
 
     video {
       width: 100%;
       object-fit: cover;
+      position: relative;
+      border-radius: 30rem;
     }
   }
 }

@@ -35,7 +35,7 @@
         </nav>
       </div>
     </div>
-    <div class="home__head_desc flex-grow-1 d-flex align-items-center">
+    <div class="home__head_desc flex-grow-1 d-flex align-items-end mb-4">
       <div class="custom-container">
         <div class="row">
           <div
@@ -71,7 +71,7 @@
 
   @include media-breakpoint-up(lg) {
     padding-top: 8rem;
-    min-height: 100vh;
+    min-height: 90vh;
   }
 
   @include media-breakpoint-down(lg) {
@@ -90,14 +90,18 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/home/head.png') no-repeat 20% 100% / contain;
+    background: url('/home/head.png') no-repeat 10% 100% / contain;
 
     @include media-breakpoint-down(xl) {
-      background-position: -5rem 100%;
+      background-position: -30rem 100%;
     }
 
     @include media-breakpoint-down(lg) {
       content: none;
+    }
+
+    @media screen and (min-width: 2000px) {
+      background-position: -10rem 100%;
     }
   }
 
