@@ -91,7 +91,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/home/head.png') no-repeat 10% 100% / contain;
+    background: url('/home/head.png') no-repeat 10rem 100% / contain;
+
+    @media screen and (max-width: 1699px) {
+      background-position: -10rem 100%;
+    }
 
     @include media-breakpoint-down(xl) {
       background-position: -30rem 100%;
@@ -99,10 +103,6 @@
 
     @include media-breakpoint-down(lg) {
       content: none;
-    }
-
-    @media screen and (min-width: 2000px) {
-      background-position: 10rem 100%;
     }
   }
 
