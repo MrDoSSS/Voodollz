@@ -38,21 +38,13 @@
     <div class="home__head_desc flex-grow-1 d-flex align-items-end mb-4">
       <div class="custom-container">
         <div class="row">
-          <div
-            class="
-              col-12 col-lg-4
-              offset-lg-8
-              d-flex d-lg-block
-              flex-column
-              align-items-center
-            "
-          >
+          <div class="col-12 col-lg-4 offset-lg-8">
             <h1>Voodollz</h1>
-            <p class="mb-2 text-center text-lg-start">
+            <p class="mb-2">
               A collection of 3D generated characters knitted to perfection and
               coming alive on the Ethereum blockchain.
             </p>
-            <img src="/home/head-btn.png" alt="" />
+            <img src="/home/head-btn.png" alt="" class="d-none d-lg-inline" />
           </div>
         </div>
       </div>
@@ -76,7 +68,7 @@
   }
 
   @include media-breakpoint-down(lg) {
-    padding: 5rem 0;
+    padding: 2rem 0 57rem;
   }
 
   > * {
@@ -102,7 +94,7 @@
     }
 
     @include media-breakpoint-down(lg) {
-      content: none;
+      background: url('/home/head-m.png') no-repeat center bottom / contain;
     }
   }
 
