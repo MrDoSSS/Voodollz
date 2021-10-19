@@ -4,6 +4,7 @@ interface EthereumProvider extends AbstractProvider {
   isConnected(): boolean
   on<T>(event: string, handler: (data: T) => void): void
   isMetaMask: boolean
+  selectedAddress: string
 }
 
 declare global {

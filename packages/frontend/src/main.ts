@@ -6,6 +6,8 @@ import App from './App.vue'
 
 import './assets/index.scss'
 
+import './firebase'
+
 const store = createStore()
 
 store.init().finally(() => {
