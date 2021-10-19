@@ -1,5 +1,5 @@
 {
-  "name": "voodollz",
+  "name": "@voodollz/frontend",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
