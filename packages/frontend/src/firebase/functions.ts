@@ -11,7 +11,7 @@ export const createUser = httpsCallable<
   { publicAddress: string; nonce: number }
 >(functions, 'createUser')
 
-export const signIn = httpsCallable<
+export const getAuthToken = httpsCallable<
   { publicAddress: string; signature: string },
   string
->(functions, 'signIn')
+>(functions, 'getAuthToken')

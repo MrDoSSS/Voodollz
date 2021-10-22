@@ -19,6 +19,40 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/admin',
+    component: () => import('@/layouts/Admin.vue'),
+    children: [
+      {
+        name: 'admin-index',
+        path: '',
+        component: () => import('@/views/admin/Index.vue'),
+      },
+      {
+        name: 'admin-whitelist-index',
+        path: 'whitelist',
+        component: () => import('@/views/admin/Whitelist.vue'),
+      },
+      {
+        name: 'admin-giveaway-index',
+        path: 'giveaway',
+        component: () => import('@/views/admin/Giveaway.vue'),
+      },
+      {
+        name: 'admin-settings-index',
+        path: 'settings',
+        component: () => import('@/views/admin/Settings.vue'),
+      },
+      {
+        name: 'admin-test-index',
+        path: 'test',
+        component: () => import('@/views/admin/Test.vue'),
+      },
+    ],
+    meta: {
+      guard: ['admin'],
+    },
+  },
 ]
 
 export const createRouter = (store: Voodollz.AppStore) => {
