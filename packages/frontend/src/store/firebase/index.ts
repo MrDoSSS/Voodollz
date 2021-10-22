@@ -1,2 +1,8 @@
 export * as whitelist from './whitelist'
-export * as auth from './auth'
+import * as auth from './auth'
+
+export const init = () => {
+  auth.init()
+}
+
+export { auth }

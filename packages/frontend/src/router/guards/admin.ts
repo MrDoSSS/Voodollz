@@ -1,6 +1,10 @@
 export const admin: Voodollz.Guard = ({ next, store }) => {
-  next({
-    name: 'home',
-    stopPipeline: true,
-  })
+  if (store.metamask.state.isOwner && store.firebase.auth.loggedIn.value) {
+    next()
+  } else {
+    next({
+      name: 'admin-login',
+      stopPipeline: true,
+    })
+  }
 }

@@ -37,6 +37,9 @@ const handleAccountsChanged = async () => {
   state.currentAccount = window.ethereum.selectedAddress
   state.connected = !!window.ethereum.selectedAddress
   contract.options.from = state.currentAccount
+
+  const owner = await contract.methods.owner().call()
+  state.isOwner = owner.toLowerCase() === state.currentAccount.toLowerCase()
 }
 
 export const init = () => {

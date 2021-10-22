@@ -12,9 +12,6 @@ onBeforeUnmount(() => document.documentElement.classList.remove('base-layout'))
 
 <style lang="scss">
 html.base-layout {
-  font-size: 10px;
-
-  --bs-body-font-size: 1.8rem;
   --bs-body-line-height: 1.3;
   --bs-body-bg: #0c0c0c;
   --bs-font-sans-serif: 'PT Sans Caption', sans-serif;

@@ -20,6 +20,17 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/',
+    component: () => import('@/layouts/Empty.vue'),
+    children: [
+      {
+        path: '/admin/login',
+        name: 'admin-login',
+        component: () => import('@/views/admin/Login.vue'),
+      },
+    ],
+  },
+  {
     path: '/admin',
     component: () => import('@/layouts/Admin.vue'),
     children: [

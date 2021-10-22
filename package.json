@@ -1,0 +1,21 @@
+{
+  "name": "voodollz",
+  "version": "1.0.0",
+  "repository": "git@github.com:MrDoSSS/Voodollz.git",
+  "author": "Mr.DoSS <artfut10@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "emulators": "firebase emulators:start",
+    "ganache": "ganache-cli",
+    "frontend:dev": "yarn --cwd packages/frontend dev",
+    "functions:build": "yarn --cwd packages/functions build",
+    "contract:dev": "cd packages/contract && truffle migrate"
+  },
+  "devDependencies": {
+    "concurrently": "^6.3.0"
+  },
+  "engines": {
+    "node": "16"
+  }
+}

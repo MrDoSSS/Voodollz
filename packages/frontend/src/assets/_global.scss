@@ -1,6 +1,16 @@
+@use 'sass:math';
+
 $spacer: 4rem;
+$card-spacer-y: math.div($spacer, 2);
+$card-spacer-x: math.div($spacer, 2);
+$modal-inner-padding: math.div($spacer, 2);
+$font-size-base: 1.8rem;
+$form-floating-label-transform: scale(0.75) translateY(-0.5rem)
+  translateX(0.2rem);
 
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/utilities';
 @import 'bootstrap/scss/mixins';
+
+$form-floating-height: add(4.5rem, $input-height-border);

@@ -23,8 +23,7 @@ export const createStore = () => {
     if (import.meta.env.DEV) {
       await contract.init()
       metamask.init()
-      metamask.connect()
-      firebase.auth.init()
+      firebase.init()
     }
   }
 

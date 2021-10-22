@@ -12,7 +12,6 @@ const store = createStore()
 
 store.init().finally(() => {
   const router = createRouter(store.store)
-
   const app = createApp(App).use(store).use(router)
 
   router.isReady().then(() => {

@@ -6,7 +6,7 @@ import {
 } from '@/firebase/auth'
 import { state as metamaskState } from '@/store/metamask'
 import { web3 } from '@/store/contract'
-import { watch, reactive } from 'vue'
+import { watch, reactive, computed } from 'vue'
 import { User } from 'firebase/auth'
 
 type State = {
@@ -20,7 +20,7 @@ export const state = reactive<State>({
 export const init = () => {
   watch(
     () => metamaskState.currentAccount,
-    () => signOut().then(signIn)
+    () => signOut()
   )
 
   authStateChanged((user) => {
@@ -28,22 +28,28 @@ export const init = () => {
   })
 }
 
-const signIn = () => {
+export const loggedIn = computed(() => !!state.user)
+
+export const signIn = () => {
   const publicAddress = metamaskState.currentAccount
 
   if (!publicAddress) return
 
-  getUser({ publicAddress })
-    .catch(() => createUser({ publicAddress }))
-    .then(({ data }) => {
-      const { publicAddress, nonce } = data
+  return new Promise(async (resolve, reject) => {
+    await getUser({ publicAddress })
+      .catch(() => createUser({ publicAddress }))
+      .then(({ data }) => {
+        const { publicAddress, nonce } = data
 
-      return web3.eth.personal.sign(
-        web3.utils.utf8ToHex(`I am signing my nonce: ${nonce}`),
-        publicAddress,
-        ''
-      )
-    })
-    .then((signature) => getAuthToken({ publicAddress, signature }))
-    .then(({ data }) => firebaseSignIn(data))
+        return web3.eth.personal.sign(
+          web3.utils.utf8ToHex(`I am signing my nonce: ${nonce}`),
+          publicAddress,
+          ''
+        )
+      })
+      .then((signature) => getAuthToken({ publicAddress, signature }))
+      .then(({ data }) => firebaseSignIn(data))
+
+    authStateChanged((user) => (user ? resolve(user) : reject()))
+  })
 }
