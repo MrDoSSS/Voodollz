@@ -2,5 +2,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.tabSize": 2,
-  "solidity.packageDefaultDependenciesDirectory": "packages/contract/node_modules"
+  "solidity.packageDefaultDependenciesDirectory": "packages/contract/node_modules",
+  "mocha-snippets.semicolon": false,
+  "mocha-snippets.glob": "**/*.spec.js"
 }

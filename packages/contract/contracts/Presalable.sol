@@ -26,10 +26,6 @@ abstract contract Presalable is Context {
       _;
   }
 
-  constructor() {
-    _presale();
-  }
-
   function presaled() public view virtual returns (bool) {
       return _presaled;
   }

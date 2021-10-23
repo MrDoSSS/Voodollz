@@ -24,6 +24,7 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
         setBaseURI(_baseTokenURI);
+        presale();
     }
 
     // Mint methods
@@ -73,15 +74,19 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Community wallet methods
 
-    function deposit(uint256 _amount) public onlyOwner {
+    function deposit() public payable onlyOwner {
         uint256 tokenCount = totalSupply();
-        uint256 claimableAmountPerToken = _amount / tokenCount;
+
+        require(tokenCount > 0, "No owners");
+        require(msg.value > 0, "Ether value sent is not correct");
+
+        uint256 claimableAmountPerToken = msg.value / tokenCount;
 
         for(uint256 i = 0; i < tokenCount; i++) {
             _claimableEth[tokenByIndex(i)] += claimableAmountPerToken;
         }
 
-        emit EthDeposited(_amount);
+        emit EthDeposited(msg.value);
     }
 
     function claimableBalance(address owner) public view returns (uint256) {
@@ -135,6 +140,6 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     }
 
     function unpresale() public onlyOwner {
-        unpresale();
+        _unpresale();
     }
 }
