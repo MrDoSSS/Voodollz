@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import ModalLoader from '@/components/admin/ModalLoader.vue'
 import { useModal } from '@/composables/modal'
-import { useWhitelistForm } from '@/composables/whitelist-form'
+import { useGiveawayForm } from '@/composables/giveaway-form'
 
 const { modalEl, showModal, hideModal } = useModal()
-const { address, error, add, loading } = useWhitelistForm()
+const { address, error, give, loading } = useGiveawayForm()
 
-const submit = () => add().then(hideModal).catch(console.error)
+const submit = () => give().then(hideModal).catch(console.error)
 
 defineExpose({
   show: showModal,
@@ -21,7 +21,7 @@ defineExpose({
         <div class="modal-content">
           <ModalLoader v-if="loading" />
           <div class="modal-header">
-            <h5 class="modal-title">Add to whitelist</h5>
+            <h5 class="modal-title">Giveaway</h5>
             <button
               type="button"
               class="btn-close"
@@ -45,7 +45,7 @@ defineExpose({
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary">Add</button>
+            <button class="btn btn-primary">Give</button>
           </div>
         </div>
       </form>

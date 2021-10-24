@@ -5,7 +5,7 @@ import { web3 } from '@/store/contract'
 import { state as metamaskState } from '@/store/metamask'
 
 type State = {
-  docs: Record<string, string>[]
+  docs: Voodollz.DocDataWithId<Voodollz.WhitelistDocData>[]
 }
 
 export const state = reactive<State>({

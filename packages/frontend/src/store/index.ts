@@ -1,7 +1,7 @@
 import { reactive, readonly, App, inject } from 'vue'
 import * as metamask from './metamask'
 import * as contract from './contract'
-import * as firebase from './firebase'
+import * as admin from './admin'
 
 const StoreSymbol = Symbol('store')
 
@@ -16,14 +16,14 @@ export const createStore = () => {
     state: readonly(state),
     metamask,
     contract,
-    firebase,
+    admin,
   }
 
   const init = async () => {
     if (import.meta.env.DEV) {
       await contract.init()
       metamask.init()
-      firebase.init()
+      admin.init()
     }
   }
 

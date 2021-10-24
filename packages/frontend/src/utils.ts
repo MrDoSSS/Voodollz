@@ -1,3 +1,5 @@
+import isArray from 'lodash/isArray'
+
 export const convertIpfs = (url: string) => {
   return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`
 }
@@ -14,4 +16,10 @@ export const estimateGas = async (
   } catch (e) {
     return def
   }
+}
+
+export const getMintedTokenIds = (transfer: any) => {
+  const transfers = isArray(transfer) ? transfer : [transfer]
+
+  return transfers.map((tr: any) => tr.returnValues.tokenId)
 }

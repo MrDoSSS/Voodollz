@@ -1,17 +1,17 @@
 import { useStore } from '@/store'
 import { ref } from 'vue'
 
-export const useWhitelistForm = () => {
+export const useGiveawayForm = () => {
   const { admin } = useStore()
   const loading = ref(false)
 
   const address = ref('')
   const error = ref('')
 
-  const add = async () => {
+  const give = async () => {
     try {
       loading.value = true
-      await admin.whitelist.add(address.value)
+      await admin.giveaway.give(address.value)
       reset()
     } catch (e: any) {
       error.value = e.message
@@ -26,5 +26,5 @@ export const useWhitelistForm = () => {
     error.value = ''
   }
 
-  return { add, reset, error, address, loading }
+  return { give, reset, error, address, loading }
 }

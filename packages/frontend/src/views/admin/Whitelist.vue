@@ -7,7 +7,7 @@ const addModal = ref()
 </script>
 
 <template>
-  <div class="d-flex align-items-center mb-1">
+  <div class="d-flex align-items-center mb-4">
     <h1 class="me-1 mb-0">Whitelist</h1>
     <button class="btn btn-success btn-sm" @click="addModal.show">
       <i class="bi bi-plus"></i>

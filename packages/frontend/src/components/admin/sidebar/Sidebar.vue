@@ -23,7 +23,6 @@ import NavItem from './NavItem.vue'
       />
       <NavItem icon="bi-gift" to="admin-giveaway-index" title="Giveaway" />
       <NavItem icon="bi-gear" to="admin-settings-index" title="Settings" />
-      <NavItem icon="bi-app" to="admin-test-index" title="Test" />
     </ul>
     <ul class="nav nav-pills flex-column text-center">
       <NavItem icon="bi-house" to="home" title="Back to site" />

@@ -54,11 +54,6 @@ const routes: Array<RouteRecordRaw> = [
         path: 'settings',
         component: () => import('@/views/admin/Settings.vue'),
       },
-      {
-        name: 'admin-test-index',
-        path: 'test',
-        component: () => import('@/views/admin/Test.vue'),
-      },
     ],
     meta: {
       guard: ['admin'],

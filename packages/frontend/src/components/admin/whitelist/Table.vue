@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useStore } from '@/store'
 
-const { firebase } = useStore()
+const { admin } = useStore()
 
-firebase.whitelist.fetch()
+admin.whitelist.fetch()
 </script>
 
 <template>
-  <table class="table table-hover">
+  <table class="table table-hover align-middle">
     <thead>
       <tr>
         <th>Address</th>
@@ -15,10 +15,13 @@ firebase.whitelist.fetch()
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, i) in firebase.whitelist.state.docs" :key="i">
+      <tr v-for="(item, i) in admin.whitelist.state.docs" :key="i">
         <td>{{ item.address }}</td>
-        <td>
-          <button @click="firebase.whitelist.remove(item.id)">
+        <td class="text-end">
+          <button
+            class="btn btn-danger"
+            @click="admin.whitelist.remove(item.id)"
+          >
             <i class="bi bi-trash"></i>
           </button>
         </td>

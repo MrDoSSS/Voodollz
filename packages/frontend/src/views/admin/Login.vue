@@ -2,12 +2,12 @@
 import { useStore } from '@/store'
 import { useRouter } from 'vue-router'
 
-const { metamask, firebase } = useStore()
+const { metamask, admin } = useStore()
 const router = useRouter()
 
 const signIn = async () => {
   await metamask.connect()
-  await firebase.auth.signIn()
+  await admin.auth.signIn()
   router.replace({ name: 'admin-index' })
 }
 </script>
