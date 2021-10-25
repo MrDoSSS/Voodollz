@@ -151,11 +151,11 @@ contract('Voodollz', () => {
       )
     })
 
-    it('when amount > 20 must be fails', async () => {
+    it('when amount > 5 must be fails', async () => {
       await truffleAssert.fails(
         contract.mint(
-          21,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          6,
+          { from: holderOne.address, value: web3.utils.toWei('0.3') }
         )
       )
     })
@@ -227,7 +227,7 @@ contract('Voodollz', () => {
   describe('giveAway', () => {
     it('must be minted to address', async () => {
       await truffleAssert.passes(
-        contract.giveAway(holderOne.address, 1)
+        contract.giveAway(holderOne.address)
       )
 
       assert.equal(await contract.balanceOf(holderOne.address), 1)
@@ -240,15 +240,15 @@ contract('Voodollz', () => {
     it('must be set claimable eth', async () => {
       await truffleAssert.passes(
         contract.mint(
-          20,
-          { from: holderOne.address, value: web3.utils.toWei('1') }
+          2,
+          { from: holderOne.address, value: web3.utils.toWei('0.1') }
         )
       )
 
       await truffleAssert.passes(
         contract.mint(
-          10,
-          { from: holderTwo.address, value: web3.utils.toWei('0.5') }
+          1,
+          { from: holderTwo.address, value: web3.utils.toWei('0.05') }
         )
       )
 
@@ -292,6 +292,36 @@ contract('Voodollz', () => {
           { value: web3.utils.toWei('0') }
         )
       )
+    })
+  })
+
+  describe('burn', () => {
+    beforeEach(() => contract.unpresale())
+    
+    it('must be burn token', async () => {
+      await truffleAssert.passes(
+        contract.mint(
+          1,
+          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+        )
+      )
+
+      assert.equal(await contract.balanceOf(holderOne.address), 1)
+
+      await truffleAssert.passes(contract.burn(151, { from: holderOne.address }))
+
+      assert.equal(await contract.balanceOf(holderOne.address), 0)
+    })
+
+    it('when caller not owner must be fails', async () => {
+      await truffleAssert.passes(
+        contract.mint(
+          1,
+          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+        )
+      )
+
+      await truffleAssert.fails(contract.burn(151, { from: holderTwo.address }))
     })
   })
 })

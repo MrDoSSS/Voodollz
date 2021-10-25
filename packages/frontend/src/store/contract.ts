@@ -51,8 +51,7 @@ export const voodollzLeft = computed(
 
 export const mint = async (amount: number) => {
   try {
-    const methodName = state.presaled ? 'presaleMint' : 'mint'
-    const method = contract.methods[methodName](amount)
+    const method = contract.methods.mint(amount)
     const value = state.price * amount
     const gas = await estimateGas(method, 200000 * amount, { value })
 
@@ -67,7 +66,29 @@ export const mint = async (amount: number) => {
 
     return getMintedTokenIds(res.events.Transfer)
   } catch (e) {
-    console.error('buy error', e)
+    console.error('mint error', e)
+    throw e
+  }
+}
+
+export const presaleMint = async (amount: number, signature: string) => {
+  try {
+    const method = contract.methods.presaleMint(amount, signature)
+    const value = state.price * amount
+    const gas = await estimateGas(method, 200000 * amount, { value })
+
+    const res = await method.send({
+      gas,
+      value,
+      maxPriorityFeePerGas: null,
+      maxFeePerGas: null,
+    })
+
+    state.totalSupply = await contract.methods.totalSupply().call()
+
+    return getMintedTokenIds(res.events.Transfer)
+  } catch (e) {
+    console.error('presale error', e)
     throw e
   }
 }

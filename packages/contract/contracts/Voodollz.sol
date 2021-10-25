@@ -14,7 +14,8 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     event EthDeposited(uint256 amount);
     event EthClaimed(address to, uint256 amount);
 
-    uint256 private _reserved = 400;
+    uint256 private constant _RESERVED = 150;
+    uint256 private _reservedLeft = _RESERVED;
     mapping(uint256 => uint256) private _claimableEth;
 
     string public baseTokenURI;
@@ -30,12 +31,12 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     // Mint methods
 
     function _mintVoodollz(uint256 _amount) private whenNotPaused {
-        require(_amount <= 20, "Can only mint 20 tokens at a time");
-        require(totalSupply() + _amount <= MAX_TOKEN_COUNT - _reserved, "Exceeds maximum Voodollz supply");
+        require(balanceOf(msg.sender) + _amount <= 5, "Can only mint 5 tokens at address");
+        require(totalSupply() + _amount <= MAX_TOKEN_COUNT - _RESERVED, "Exceeds maximum Voodollz supply");
         require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
-            uint mintIndex = totalSupply() + 1;
+            uint256 mintIndex = totalSupply() + _RESERVED + 1;
             if (totalSupply() < MAX_TOKEN_COUNT) {
                 _safeMint(msg.sender, mintIndex);
             }
@@ -46,7 +47,7 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         _mintVoodollz(_amount);
     }
 
-    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {
+    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
         address signer = recoverSigner(msg.sender, _signature);
         require(signer == owner(), "Not authorized to mint");
 
@@ -59,17 +60,13 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Give methods
     
-    function giveAway(address _to, uint256 _amount) public onlyOwner whenNotPaused {
-        require(_amount <= _reserved, "Exceeds reserved Voodollz supply");
+    function giveAway(address _to) public onlyOwner whenNotPaused {
+        require(totalSupply() < MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
+        require(_reservedLeft > 0, "Exceeds reserved Voodollz supply");
 
-        for(uint256 i = 1; i <= _amount; i++) {
-            uint mintIndex = totalSupply() + 1;
-            if (totalSupply() < MAX_TOKEN_COUNT) {
-                _safeMint(_to, mintIndex);
-            }
-        }
+        _safeMint(_to, _RESERVED - _reservedLeft + 1);
 
-        _reserved -= _amount;
+        _reservedLeft -= 1;
     }
 
     // Community wallet methods
@@ -115,6 +112,13 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         require(payable(msg.sender).send(amount));
 
         emit EthClaimed(msg.sender, amount);
+    }
+
+    // Burn methods
+    
+    function burn(uint256 tokenId) public virtual {
+        require(_isApprovedOrOwner(msg.sender, tokenId), "Caller is not owner nor approved");
+        _burn(tokenId);
     }
 
     // Service methods
