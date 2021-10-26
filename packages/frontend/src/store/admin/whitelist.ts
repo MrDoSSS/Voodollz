@@ -19,6 +19,8 @@ export const fetch = async () => {
 }
 
 export const add = async (address: string) => {
+  address = address.toLowerCase()
+
   const signature = await web3.eth.personal.sign(
     web3.utils.keccak256(address),
     metamaskState.currentAccount!,

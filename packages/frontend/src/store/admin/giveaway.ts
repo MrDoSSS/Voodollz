@@ -19,7 +19,7 @@ export const fetch = async () => {
 }
 
 export const give = async (address: string) => {
-  const method = contract.methods.giveAway(address, 1)
+  const method = contract.methods.giveAway(address)
   const gas = await estimateGas(method, 200000)
 
   const res = await method.send({

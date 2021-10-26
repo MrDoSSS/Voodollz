@@ -1,3 +1,9 @@
+<script lang="ts" setup>
+import { useMint } from '@/composables/mint'
+
+const { mint } = useMint()
+</script>
+
 <template>
   <div class="home__head d-flex flex-column">
     <div class="custom-container-fluid mb-3 mb-lg-0">
@@ -44,7 +50,13 @@
               A collection of 3D generated characters knitted to perfection and
               coming alive on the Ethereum blockchain.
             </p>
-            <img src="/home/head-btn.png" alt="" class="d-none d-lg-inline" />
+            <button @click="mint">
+              <img
+                src="/home/head-btn.png"
+                alt=""
+                class="d-none d-lg-inline cursor-pointer"
+              />
+            </button>
           </div>
         </div>
       </div>

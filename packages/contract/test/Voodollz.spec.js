@@ -271,14 +271,6 @@ contract('Voodollz', () => {
       assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderOne.address)), 0)
     })
 
-    it('when no owners must be fails', async () => {
-      await truffleAssert.fails(
-        contract.deposit(
-          { value: web3.utils.toWei('6') }
-        )
-      )
-    })
-
     it('when eth value is 0 must be fails', async () => {
       await truffleAssert.passes(
         contract.mint(

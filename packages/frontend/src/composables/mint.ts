@@ -1,9 +1,19 @@
 import { ref, computed } from 'vue'
 import { useStore } from '@/store'
 import { emitter } from '@/event-bus'
+import { whitelistRef, serializeDocs } from '@/firebase/firestore'
+import { query, getDocs, where } from '@firebase/firestore'
+
+const getSignature = async (address: string) => {
+  const q = query(whitelistRef, where('address', '==', address.toLowerCase()))
+  const querySnapshot = await getDocs(q)
+  const [doc] = serializeDocs(querySnapshot)
+
+  return doc?.signature
+}
 
 export const useMint = () => {
-  const { metamask, contract } = useStore()
+  const { metamask, contract, auth } = useStore()
   const amount = ref(1)
 
   const inc = () =>
@@ -21,14 +31,21 @@ export const useMint = () => {
         await metamask.connect()
       }
 
-      if (contract.state.presaled && !contract.state.inWhitelist) {
-        return emitter.emit('MintPresaleErrorModal:toggle', true)
-      }
+      if (contract.state.presaled) {
+        await auth.signIn()
 
-      await contract.mint(amount.value)
+        const signature = await getSignature(metamask.state.currentAccount!)
+
+        if (!signature) return
+
+        await contract.presaleMint(amount.value, signature)
+      } else {
+        await contract.mint(amount.value)
+      }
 
       emitter.emit('MintSuccessModal:toggle', true)
     } catch (e) {
+      console.log(e)
       emitter.emit('MintErrorModal:toggle', true)
     } finally {
       emitter.emit('Loader:toggle', false)

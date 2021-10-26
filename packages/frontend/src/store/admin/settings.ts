@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { contract } from '@/store/contract'
+import { contract, web3 } from '@/store/contract'
 import { estimateGas } from '@/utils'
 
 export const state = reactive({
@@ -34,4 +34,17 @@ export const setPresale = async (presale: boolean) => {
   const gas = await estimateGas(method)
 
   return method.send({ gas, maxPriorityFeePerGas: null, maxFeePerGas: null })
+}
+
+export const setDeposit = async (amount: string) => {
+  const value = web3.utils.toWei(amount)
+  const method = contract.methods.deposit()
+  const gas = await estimateGas(method, 0, { value })
+
+  return method.send({
+    value,
+    gas,
+    maxPriorityFeePerGas: null,
+    maxFeePerGas: null,
+  })
 }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useStore } from '@/store'
+import { estimateGas } from '@/utils'
 
-const { admin } = useStore()
+const { admin, contract } = useStore()
 admin.stat.fetchAll()
 </script>
 

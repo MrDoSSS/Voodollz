@@ -16,12 +16,12 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     uint256 private constant _RESERVED = 150;
     uint256 private _reservedLeft = _RESERVED;
-    mapping(uint256 => uint256) private _claimableEth;
-
+    mapping(uint256 => bool) _withdrawnTokens;
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
     uint256 public constant PRICE = 0.05 ether;
+    uint256 public ethDeposit = 0 ether;
 
     constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
         setBaseURI(_baseTokenURI);
@@ -72,16 +72,9 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     // Community wallet methods
 
     function deposit() public payable onlyOwner {
-        uint256 tokenCount = totalSupply();
+        require(msg.value > 0, "Ether value is not correct");
 
-        require(tokenCount > 0, "No owners");
-        require(msg.value > 0, "Ether value sent is not correct");
-
-        uint256 claimableAmountPerToken = msg.value / tokenCount;
-
-        for(uint256 i = 0; i < tokenCount; i++) {
-            _claimableEth[tokenByIndex(i)] += claimableAmountPerToken;
-        }
+        ethDeposit = msg.value;
 
         emit EthDeposited(msg.value);
     }
@@ -89,22 +82,34 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     function claimableBalance(address owner) public view returns (uint256) {
         uint256 balance = 0;
         uint256 numTokens = balanceOf(owner);
+        uint256 amountPerToken = claimableAmountPerToken();
 
         for(uint256 i = 0; i < numTokens; i++) {
-            balance += _claimableEth[tokenOfOwnerByIndex(owner, i)];
+            uint256 tokenId = tokenOfOwnerByIndex(owner, i);
+            
+            if(!_withdrawnTokens[tokenId]) {
+                balance += amountPerToken;
+            }
         }
 
         return balance;
     }
 
+    function claimableAmountPerToken() public view returns(uint256) {
+        return ethDeposit / totalSupply();
+    }
+
     function claim() public {
         uint256 amount = 0;
         uint256 numTokens = balanceOf(msg.sender);
+        uint256 amountPerToken = claimableAmountPerToken();
 
         for(uint256 i = 0; i < numTokens; i++) {
             uint256 tokenId = tokenOfOwnerByIndex(msg.sender, i);
-            amount += _claimableEth[tokenId];
-            _claimableEth[tokenId] = 0;
+            if(!_withdrawnTokens[tokenId]) {
+                amount += amountPerToken;
+                _withdrawnTokens[tokenId] = true;
+            }
         }
 
         require(amount > 0, "There is no amount left to claim");
