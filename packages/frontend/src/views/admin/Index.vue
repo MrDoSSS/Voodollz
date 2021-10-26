@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { getDataForClaim } from '@/firebase/functions'
 import { useStore } from '@/store'
-import { estimateGas } from '@/utils'
 
-const { admin, contract } = useStore()
+const { admin } = useStore()
 admin.stat.fetchAll()
+
+const g = () => getDataForClaim().then(console.log).catch(console.log)
 </script>
 
 <template>
@@ -14,6 +16,7 @@ admin.stat.fetchAll()
         <div class="card-body">
           <h5 class="card-title">Balance</h5>
           <p class="card-text">{{ admin.stat.state.balance }} eth</p>
+          <button @click="g">get claim data</button>
         </div>
       </div>
     </div>

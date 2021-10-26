@@ -12,16 +12,18 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     using ECDSA for bytes32;
 
     event EthDeposited(uint256 amount);
-    event EthClaimed(address to, uint256 amount);
+    event EthClaimed(string _nonce, uint256 amount);
 
     uint256 private constant _RESERVED = 150;
     uint256 private _reservedLeft = _RESERVED;
-    mapping(uint256 => bool) _withdrawnTokens;
+    uint256 private _ethDeposited = 0 ether;
+
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
     uint256 public constant PRICE = 0.05 ether;
-    uint256 public ethDeposit = 0 ether;
+
+    mapping(string => bool) private _usedNonces;
 
     constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
         setBaseURI(_baseTokenURI);
@@ -54,10 +56,6 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         _mintVoodollz(_amount);
     }
 
-    function recoverSigner(address _wallet, bytes memory _signature) public pure returns (address){
-        return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
-    }
-
     // Give methods
     
     function giveAway(address _to) public onlyOwner whenNotPaused {
@@ -71,52 +69,34 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Community wallet methods
 
-    function deposit() public payable onlyOwner {
-        require(msg.value > 0, "Ether value is not correct");
-
-        ethDeposit = msg.value;
+    function deposit() public payable onlyOwner{
+        _ethDeposited = msg.value;
 
         emit EthDeposited(msg.value);
     }
 
-    function claimableBalance(address owner) public view returns (uint256) {
-        uint256 balance = 0;
-        uint256 numTokens = balanceOf(owner);
-        uint256 amountPerToken = claimableAmountPerToken();
+    function claim(uint256 _amount, string memory _nonce, bytes memory _signature) public {
+        address signer = recoverSigner(_amount, _nonce, _signature);
+        require(signer == owner(), "Not authorized to claim");
+        require(!_usedNonces[_nonce], "Not authorized to claim");
 
-        for(uint256 i = 0; i < numTokens; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(owner, i);
-            
-            if(!_withdrawnTokens[tokenId]) {
-                balance += amountPerToken;
-            }
-        }
+        require(_amount > 0, "There is no amount left to claim");
+        require(payable(msg.sender).send(_amount));
 
-        return balance;
+        _usedNonces[_nonce] = true;
+
+        emit EthClaimed(_nonce, _amount);
     }
 
-    function claimableAmountPerToken() public view returns(uint256) {
-        return ethDeposit / totalSupply();
-    }
+    function tokensOfOwner(address _owner) public view returns(uint256[] memory){
+        uint256 tokenCount = balanceOf(_owner);
+        uint256[] memory tokensId = new uint256[](tokenCount);
 
-    function claim() public {
-        uint256 amount = 0;
-        uint256 numTokens = balanceOf(msg.sender);
-        uint256 amountPerToken = claimableAmountPerToken();
-
-        for(uint256 i = 0; i < numTokens; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(msg.sender, i);
-            if(!_withdrawnTokens[tokenId]) {
-                amount += amountPerToken;
-                _withdrawnTokens[tokenId] = true;
-            }
+        for(uint256 i; i < tokenCount; i++){
+            tokensId[i] = tokenOfOwnerByIndex(_owner, i);
         }
 
-        require(amount > 0, "There is no amount left to claim");
-
-        require(payable(msg.sender).send(amount));
-
-        emit EthClaimed(msg.sender, amount);
+        return tokensId;
     }
 
     // Burn methods
@@ -127,6 +107,14 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     }
 
     // Service methods
+
+    function recoverSigner(address _wallet, bytes memory _signature) private pure returns (address){
+        return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
+    }
+
+    function recoverSigner(uint256 _amount, string memory nonce, bytes memory _signature) private pure returns (address){
+        return keccak256(abi.encodePacked(_amount, nonce)).toEthSignedMessageHash().recover(_signature);
+    }
     
     function _baseURI() internal view virtual override returns (string memory) {
         return baseTokenURI;

@@ -15,3 +15,10 @@ export const getAuthToken = httpsCallable<
   { publicAddress: string; signature: string },
   string
 >(functions, 'getAuthToken')
+
+export const setDeposit = httpsCallable<number, string>(functions, 'setDeposit')
+
+export const getDataForClaim = httpsCallable<
+  void,
+  { amount: number; nonce: string; signature: string }
+>(functions, 'getDataForClaim')

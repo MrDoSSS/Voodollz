@@ -234,59 +234,6 @@ contract('Voodollz', () => {
     })
   })
 
-  describe('deposit', () => {
-    beforeEach(() => contract.unpresale())
-
-    it('must be set claimable eth', async () => {
-      await truffleAssert.passes(
-        contract.mint(
-          2,
-          { from: holderOne.address, value: web3.utils.toWei('0.1') }
-        )
-      )
-
-      await truffleAssert.passes(
-        contract.mint(
-          1,
-          { from: holderTwo.address, value: web3.utils.toWei('0.05') }
-        )
-      )
-
-      await truffleAssert.passes(
-        contract.deposit(
-          { value: web3.utils.toWei('6') }
-        )
-      )
-
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderOne.address)), 4)
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderTwo.address)), 2)
-
-      truffleAssert.eventEmitted(
-        await contract.claim(
-          { from: holderOne.address }
-        ),
-        'EthClaimed',
-      )
-
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderOne.address)), 0)
-    })
-
-    it('when eth value is 0 must be fails', async () => {
-      await truffleAssert.passes(
-        contract.mint(
-          1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
-        )
-      )
-
-      await truffleAssert.fails(
-        contract.deposit(
-          { value: web3.utils.toWei('0') }
-        )
-      )
-    })
-  })
-
   describe('burn', () => {
     beforeEach(() => contract.unpresale())
     

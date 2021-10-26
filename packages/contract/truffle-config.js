@@ -6,9 +6,17 @@ const web3 = new Web3();
 module.exports = {
   networks: {
     development: {
-      host: "127.0.0.1",
-      port: 8545,
       network_id: "*",
+      provider() {
+        return new HDWalletProvider({
+          providerOrUrl: 'ws://127.0.0.1:8545',
+          mnemonic: {
+            phrase: process.env.MNEMONIC
+          },
+          chainId: 1337,
+          shareNonce: true
+        })
+      },
     },
     rinkeby: {
       provider() {
