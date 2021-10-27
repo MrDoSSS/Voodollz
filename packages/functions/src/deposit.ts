@@ -1,12 +1,13 @@
 import * as functions from 'firebase-functions'
-import { app as getApp } from 'firebase-admin'
-import { web3, contract, account } from './web3'
-import { firestore } from 'firebase-admin/lib/firestore'
+import { app as getApp, firestore } from 'firebase-admin'
+import { web3, voodollzContract, cwContract, account } from './web3'
+import { estimateGas } from './utils'
+import dayjs from 'dayjs'
 
 const app = getApp()
 const db = app.firestore()
 
-contract.events.EthClaimed((err: any, data: any) => {
+cwContract.events.EthClaimed((err: any, data: any) => {
   console.log(err, data)
 })
 
@@ -15,9 +16,12 @@ export const setDeposit = functions.https.onCall(async (deposit, context) => {
     throw new functions.https.HttpsError('unauthenticated', '')
   }
 
-  const tokenCount = await contract.methods.totalSupply().call().then(parseInt)
+  const tokenCount = await voodollzContract.methods
+    .totalSupply()
+    .call()
+    .then(parseInt)
   const amountPerToken = deposit / tokenCount
-  const tokenIds = await contract
+  const tokenIds = await voodollzContract
     .getPastEvents('Transfer', {
       filter: {
         from: '0x0000000000000000000000000000000000000000',
@@ -36,7 +40,7 @@ export const setDeposit = functions.https.onCall(async (deposit, context) => {
 
       if (empty) {
         const doc = db.collection('deposits').doc()
-        batch.set(doc, { tokenId, value: amountPerToken })
+        batch.set(doc, { tokenId, value: amountPerToken, lockedUntil: false })
       } else {
         const [doc] = docs
         batch.update(doc.ref, {
@@ -48,7 +52,13 @@ export const setDeposit = functions.https.onCall(async (deposit, context) => {
     })
   })
 
-  return Promise.all(promises).then(() => batch.commit())
+  await Promise.all(promises).then(() => batch.commit())
+
+  const method = cwContract.methods.deposit()
+  const value = web3.utils.toWei(deposit.toString())
+  const gas = await estimateGas(method, 0, { value })
+
+  await method.send({ value, gas })
 })
 
 export const getDataForClaim = functions.https.onCall(async (_, context) => {
@@ -56,13 +66,14 @@ export const getDataForClaim = functions.https.onCall(async (_, context) => {
     throw new functions.https.HttpsError('unauthenticated', '')
   }
 
-  const tokensOfOwner = await contract.methods
+  const tokensOfOwner = await voodollzContract.methods
     .tokensOfOwner(context.auth.uid)
     .call()
   const depositsSnapshot = await db
     .collection('deposits')
     .where('tokenId', 'in', tokensOfOwner)
     .where('value', '>', 0)
+    .where('lockedUntil', '==', false)
     .get()
 
   if (depositsSnapshot.empty) {
@@ -87,9 +98,36 @@ export const getDataForClaim = functions.https.onCall(async (_, context) => {
     web3.utils.keccak256(web3.utils.encodePacked(amount, claimRef.id)!)
   )
 
+  const batch = db.batch()
+
+  depositsSnapshot.forEach((doc) => {
+    batch.update(doc.ref, { lockedUntil: dayjs().add(10, 'minute').toDate() })
+  })
+
+  await batch.commit()
+
   return {
     amount,
     signature,
     nonce: claimRef.id,
   }
 })
+
+export const unlockDeposits = functions.pubsub
+  .schedule('every 10 minutes')
+  .onRun(async () => {
+    const depositsSnapshot = await db
+      .collection('deposits')
+      .where('lockedUntil', '<', dayjs().toDate())
+      .get()
+
+    if (depositsSnapshot.empty) return
+
+    const batch = db.batch()
+
+    depositsSnapshot.forEach((doc) => {
+      batch.update(doc.ref, { lockedUntil: false })
+    })
+
+    await batch.commit()
+  })

@@ -1,4 +1,4 @@
-import type { firestore } from 'firebase-admin/lib/firestore'
+import type { firestore } from 'firebase-admin'
 
 export const generateNonce = () =>
   Math.floor(Math.random() * (9999 - 1000) + 1000)
@@ -30,4 +30,18 @@ const deleteQueryBatch = async (
   await batch.commit()
 
   process.nextTick(() => deleteQueryBatch(db, query, resolve))
+}
+
+export const estimateGas = async (
+  method: any,
+  def: number | null = null,
+  sendArgs: Record<string, any> = {}
+) => {
+  try {
+    sendArgs = { maxPriorityFeePerGas: null, maxFeePerGas: null, ...sendArgs }
+    const res = await method.estimateGas(sendArgs)
+    return res + Math.round(res * 0.1)
+  } catch (e) {
+    return def
+  }
 }

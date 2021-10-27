@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -11,19 +11,13 @@ import "./Presalable.sol";
 contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     using ECDSA for bytes32;
 
-    event EthDeposited(uint256 amount);
-    event EthClaimed(string _nonce, uint256 amount);
-
     uint256 private constant _RESERVED = 150;
     uint256 private _reservedLeft = _RESERVED;
-    uint256 private _ethDeposited = 0 ether;
 
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
     uint256 public constant PRICE = 0.05 ether;
-
-    mapping(string => bool) private _usedNonces;
 
     constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
         setBaseURI(_baseTokenURI);
@@ -67,26 +61,14 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         _reservedLeft -= 1;
     }
 
-    // Community wallet methods
-
-    function deposit() public payable onlyOwner{
-        _ethDeposited = msg.value;
-
-        emit EthDeposited(msg.value);
+    // Burn methods
+    
+    function burn(uint256 tokenId) public virtual {
+        require(_isApprovedOrOwner(msg.sender, tokenId), "Caller is not owner nor approved");
+        _burn(tokenId);
     }
 
-    function claim(uint256 _amount, string memory _nonce, bytes memory _signature) public {
-        address signer = recoverSigner(_amount, _nonce, _signature);
-        require(signer == owner(), "Not authorized to claim");
-        require(!_usedNonces[_nonce], "Not authorized to claim");
-
-        require(_amount > 0, "There is no amount left to claim");
-        require(payable(msg.sender).send(_amount));
-
-        _usedNonces[_nonce] = true;
-
-        emit EthClaimed(_nonce, _amount);
-    }
+    // Service methods
 
     function tokensOfOwner(address _owner) public view returns(uint256[] memory){
         uint256 tokenCount = balanceOf(_owner);
@@ -99,21 +81,8 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         return tokensId;
     }
 
-    // Burn methods
-    
-    function burn(uint256 tokenId) public virtual {
-        require(_isApprovedOrOwner(msg.sender, tokenId), "Caller is not owner nor approved");
-        _burn(tokenId);
-    }
-
-    // Service methods
-
     function recoverSigner(address _wallet, bytes memory _signature) private pure returns (address){
         return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
-    }
-
-    function recoverSigner(uint256 _amount, string memory nonce, bytes memory _signature) private pure returns (address){
-        return keccak256(abi.encodePacked(_amount, nonce)).toEthSignedMessageHash().recover(_signature);
     }
     
     function _baseURI() internal view virtual override returns (string memory) {
