@@ -5,60 +5,62 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./Presalable.sol";
 
 contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     using ECDSA for bytes32;
+    using Counters for Counters.Counter;
 
     uint256 private constant _RESERVED = 150;
-    uint256 private _reservedLeft = _RESERVED;
 
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
-    uint256 public constant PRICE = 0.05 ether;
+    uint256 public constant PRICE = 0.1 ether;
+    
+    Counters.Counter private _tokenIdCounter = Counters.Counter(_RESERVED);
+    Counters.Counter private _giveTokenIdCounter;
 
-    constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
+    constructor(string memory _baseTokenURI) ERC721("Zllodoov", "ZLDV")  {
         setBaseURI(_baseTokenURI);
         presale();
     }
 
     // Mint methods
 
-    function _mintVoodollz(uint256 _amount) private whenNotPaused {
+    function _mintVoodollz(uint256 _amount, uint256 _price) private whenNotPaused {
         require(balanceOf(msg.sender) + _amount <= 5, "Can only mint 5 tokens at address");
-        require(totalSupply() + _amount <= MAX_TOKEN_COUNT - _RESERVED, "Exceeds maximum Voodollz supply");
-        require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
+        require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
+        require(msg.value >= _price * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
-            uint256 mintIndex = totalSupply() + _RESERVED + 1;
-            if (totalSupply() < MAX_TOKEN_COUNT) {
-                _safeMint(msg.sender, mintIndex);
+            if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
+                _tokenIdCounter.increment();
+                _safeMint(msg.sender, _tokenIdCounter.current());
             }
         }
     }
 
     function mint(uint256 _amount) public payable whenNotPresaled {
-        _mintVoodollz(_amount);
+        _mintVoodollz(_amount, PRICE);
     }
 
     function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
         address signer = recoverSigner(msg.sender, _signature);
         require(signer == owner(), "Not authorized to mint");
 
-        _mintVoodollz(_amount);
+        _mintVoodollz(_amount, PRICE / 2);
     }
 
     // Give methods
     
-    function giveAway(address _to) public onlyOwner whenNotPaused {
-        require(totalSupply() < MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
-        require(_reservedLeft > 0, "Exceeds reserved Voodollz supply");
+    function giveAway(address _to) public onlyOwner {
+        require(_giveTokenIdCounter.current() < _RESERVED, "Exceeds reserved Voodollz supply");
 
-        _safeMint(_to, _RESERVED - _reservedLeft + 1);
-
-        _reservedLeft -= 1;
+        _giveTokenIdCounter.increment();
+        _safeMint(_to, _giveTokenIdCounter.current());
     }
 
     // Burn methods

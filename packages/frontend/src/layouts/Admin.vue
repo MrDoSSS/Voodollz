@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import Loader from '@/components/Loader.vue'
 import Sidebar from '@/components/admin/sidebar/Sidebar.vue'
 </script>
 
 <template>
+  <Loader />
+
   <div class="admin vh-100 d-flex flex-column">
     <main class="d-flex flex-grow-1">
       <Sidebar />

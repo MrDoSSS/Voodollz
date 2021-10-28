@@ -7,35 +7,33 @@ import { mnemonicToSeed } from 'bip39'
 import { hdkey } from 'ethereumjs-wallet'
 import * as functions from 'firebase-functions'
 
-const {
-  INFURA_PROJECT_ID,
-  VOODOLLZ_CONTRACT_ADDRESS,
-  CW_CONTRACT_ADDRESS,
-  MNEMONIC,
-} = functions.config()
+const { voodollz } = functions.config()
 
 const providerUrl = process.env.FUNCTIONS_EMULATOR
   ? 'ws://localhost:8545'
-  : `wss://${process.env.ETH_NETWORK}.infura.io/ws/v3/${INFURA_PROJECT_ID}`
+  : `wss://${voodollz.eth_network}.infura.io/ws/v3/${voodollz.infura_project_id}`
 
-const provider = new Web3.providers.WebsocketProvider(providerUrl)
+const provider = new Web3.providers.WebsocketProvider(providerUrl, {
+  clientConfig: { keepalive: true, keepaliveInterval: -1 },
+  reconnect: { auto: true, delay: 1000 },
+})
 
 export const web3 = new Web3(provider)
 
 export const voodollzContract = new web3.eth.Contract(
   voodollzAbi as unknown as AbiItem,
-  VOODOLLZ_CONTRACT_ADDRESS
+  voodollz.contract_address
 )
 
 export const cwContract = new web3.eth.Contract(
   cwAbi as unknown as AbiItem,
-  CW_CONTRACT_ADDRESS
+  voodollz.cw_contract_address
 )
 
 export let account: Account
 
 export const initAccountOwner = async () => {
-  const seed = await mnemonicToSeed(MNEMONIC as string)
+  const seed = await mnemonicToSeed(voodollz.mnemonic as string)
   const hdk = hdkey.fromMasterSeed(seed)
 
   const addressNode = hdk.derivePath("m/44'/60'/0'/0/0")

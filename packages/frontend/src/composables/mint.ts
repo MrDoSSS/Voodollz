@@ -36,7 +36,9 @@ export const useMint = () => {
 
         const signature = await getSignature(metamask.state.currentAccount!)
 
-        if (!signature) return
+        if (!signature) {
+          return emitter.emit('MintPresaleErrorModal:toggle', true)
+        }
 
         await contract.presaleMint(amount.value, signature)
       } else {

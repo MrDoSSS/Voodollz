@@ -8,7 +8,7 @@ contract CommunityWallet is Ownable {
   using ECDSA for bytes32;
 
   event EthDeposited(uint256 amount);
-  event EthClaimed(string _nonce, uint256 amount);
+  event EthClaimed(string nonce, uint256 amount);
 
   mapping(string => bool) private _usedNonces;
 
@@ -29,7 +29,7 @@ contract CommunityWallet is Ownable {
       emit EthClaimed(_nonce, _amount);
   }
 
-  function recoverSigner(uint256 _amount, string memory nonce, bytes memory _signature) private pure returns (address){
-      return keccak256(abi.encodePacked(_amount, nonce)).toEthSignedMessageHash().recover(_signature);
+  function recoverSigner(uint256 _amount, string memory _nonce, bytes memory _signature) private pure returns (address){
+      return keccak256(abi.encodePacked(_amount, _nonce)).toEthSignedMessageHash().recover(_signature);
   }
 }

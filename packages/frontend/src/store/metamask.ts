@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { contract } from './contract'
+import { voodollz, cw } from './contract'
 
 type State = {
   currentAccount: string | null
@@ -36,9 +36,10 @@ export const disconnect = () => {
 const handleAccountsChanged = async () => {
   state.currentAccount = window.ethereum.selectedAddress
   state.connected = !!window.ethereum.selectedAddress
-  contract.options.from = state.currentAccount
+  voodollz.options.from = state.currentAccount
+  cw.options.from = state.currentAccount
 
-  const owner = await contract.methods.owner().call()
+  const owner = await voodollz.methods.owner().call()
   state.isOwner = owner.toLowerCase() === state.currentAccount.toLowerCase()
 }
 

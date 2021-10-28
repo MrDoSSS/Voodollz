@@ -3,12 +3,29 @@ import { app as getApp, firestore } from 'firebase-admin'
 import { web3, voodollzContract, cwContract, account } from './web3'
 import { estimateGas } from './utils'
 import dayjs from 'dayjs'
+import { EventData } from 'web3-eth-contract'
 
 const app = getApp()
 const db = app.firestore()
 
-cwContract.events.EthClaimed((err: any, data: any) => {
-  console.log(err, data)
+cwContract.events.EthClaimed(async (err: any, data: EventData) => {
+  if (err) return
+
+  functions.logger.info('EthClaimed', data.returnValues)
+
+  const claimDoc = await db
+    .collection('claims')
+    .doc(data.returnValues.nonce)
+    .get()
+
+  if (!claimDoc.exists) return
+
+  const { deposits } = claimDoc.data()!
+  const batch = db.batch()
+  deposits.forEach((doc: firestore.DocumentReference) => {
+    batch.update(doc, { value: 0, lockedUntil: false })
+  })
+  batch.commit()
 })
 
 export const setDeposit = functions.https.onCall(async (deposit, context) => {
@@ -120,6 +137,11 @@ export const unlockDeposits = functions.pubsub
       .collection('deposits')
       .where('lockedUntil', '<', dayjs().toDate())
       .get()
+
+    functions.logger.log(
+      'unlockDeposits launched, docs count: ',
+      depositsSnapshot.size
+    )
 
     if (depositsSnapshot.empty) return
 

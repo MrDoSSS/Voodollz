@@ -6,17 +6,18 @@ const web3 = new Web3();
 module.exports = {
   networks: {
     development: {
+      host: "127.0.0.1",
+      port: 8545,
       network_id: "*",
+    },
+    ropsten: {
       provider() {
-        return new HDWalletProvider({
-          providerOrUrl: 'ws://127.0.0.1:8545',
-          mnemonic: {
-            phrase: process.env.MNEMONIC
-          },
-          chainId: 1337,
-          shareNonce: true
-        })
+        return new HDWalletProvider(
+          process.env.MNEMONIC,
+          `wss://ropsten.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+        )
       },
+      network_id: 3
     },
     rinkeby: {
       provider() {

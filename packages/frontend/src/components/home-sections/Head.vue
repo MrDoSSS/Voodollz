@@ -1,7 +1,14 @@
 <script lang="ts" setup>
 import { useMint } from '@/composables/mint'
+import { useStore } from '@/store'
 
 const { mint } = useMint()
+const { contract, auth } = useStore()
+
+const claim = async () => {
+  await auth.signIn()
+  contract.claim()
+}
 </script>
 
 <template>
@@ -50,13 +57,8 @@ const { mint } = useMint()
               A collection of 3D generated characters knitted to perfection and
               coming alive on the Ethereum blockchain.
             </p>
-            <button @click="mint">
-              <img
-                src="/home/head-btn.png"
-                alt=""
-                class="d-none d-lg-inline cursor-pointer"
-              />
-            </button>
+            <button @click="mint">Mint Voodollz</button>
+            <button @click="claim" class="mt-2">Claim</button>
           </div>
         </div>
       </div>

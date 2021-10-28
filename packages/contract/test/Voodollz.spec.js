@@ -134,7 +134,7 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.1') }
         )
       )
 
@@ -241,7 +241,7 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.1') }
         )
       )
 
@@ -256,7 +256,7 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.1') }
         )
       )
 

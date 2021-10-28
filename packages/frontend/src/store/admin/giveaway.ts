@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { contract } from '@/store/contract'
+import { voodollz } from '@/store/contract'
 import { estimateGas, getMintedTokenIds } from '@/utils'
 import { giveawayRef, serializeDocs } from '@/firebase/firestore'
 import { getDocs, addDoc } from 'firebase/firestore'
@@ -19,7 +19,7 @@ export const fetch = async () => {
 }
 
 export const give = async (address: string) => {
-  const method = contract.methods.giveAway(address)
+  const method = voodollz.methods.giveAway(address)
   const gas = await estimateGas(method, 200000)
 
   const res = await method.send({
