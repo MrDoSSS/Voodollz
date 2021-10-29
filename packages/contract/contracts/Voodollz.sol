@@ -30,10 +30,10 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Mint methods
 
-    function _mintVoodollz(uint256 _amount, uint256 _price) private whenNotPaused {
+    function _mintVoodollz(uint256 _amount) private whenNotPaused {
         require(balanceOf(msg.sender) + _amount <= 5, "Can only mint 5 tokens at address");
         require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
-        require(msg.value >= _price * _amount, "Ether value sent is not correct");
+        require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
             if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
@@ -44,14 +44,14 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     }
 
     function mint(uint256 _amount) public payable whenNotPresaled {
-        _mintVoodollz(_amount, PRICE);
+        _mintVoodollz(_amount);
     }
 
     function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
         address signer = recoverSigner(msg.sender, _signature);
         require(signer == owner(), "Not authorized to mint");
 
-        _mintVoodollz(_amount, PRICE / 2);
+        _mintVoodollz(_amount);
     }
 
     // Give methods

@@ -12,7 +12,7 @@ contract CommunityWallet is Ownable {
 
   mapping(string => bool) private _usedNonces;
 
-  function deposit() public payable onlyOwner{
+  function deposit() public payable {
       emit EthDeposited(msg.value);
   }
 

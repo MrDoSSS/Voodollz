@@ -15,7 +15,8 @@
   },
   "functions": {
     "source": "packages/functions",
-    "predeploy": "yarn --cwd \"$RESOURCE_DIR\" build"
+    "predeploy": "yarn --cwd \"$RESOURCE_DIR\" build",
+    "ignore": [".runtimeconfig.json"]
   },
   "emulators": {
     "auth": {
