@@ -11,7 +11,7 @@ admin.giveaway.fetch()
     <thead>
       <tr>
         <th>Address</th>
-        <th>Token IDs</th>
+        <th>Token ID</th>
       </tr>
     </thead>
     <tbody>

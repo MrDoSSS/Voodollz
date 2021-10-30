@@ -14,16 +14,17 @@ export const state = reactive<State>({
   fetched: false,
 })
 export const fetch = async () => {
+  if (state.fetched) return
+
   onSnapshot(
     giveawayRef,
     { includeMetadataChanges: true },
     (querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
-        console.log(change)
         if (change.type === 'removed') {
           delete state.docs[change.doc.id]
         } else {
-          state.docs[change.doc.id] == change.doc.data()
+          state.docs[change.doc.id] = change.doc.data()
         }
       })
     },
