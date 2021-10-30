@@ -1,21 +1,37 @@
 import { reactive } from 'vue'
-import { whitelistRef, serializeDocs } from '@/firebase/firestore'
-import { getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
+import { whitelistRef } from '@/firebase/firestore'
+import { addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 import { web3 } from '@/store/contract'
 import { state as metamaskState } from '@/store/metamask'
 
 type State = {
-  docs: Voodollz.DocDataWithId<Voodollz.WhitelistDocData>[]
+  docs: Record<string, Voodollz.WhitelistDocData>
+  fetched: boolean
 }
 
 export const state = reactive<State>({
-  docs: [],
+  docs: {},
+  fetched: false,
 })
 
-export const fetch = async () => {
-  const querySnapshot = await getDocs(whitelistRef)
-  const docs = serializeDocs(querySnapshot)
-  state.docs = docs
+export const fetch = () => {
+  if (state.fetched) return
+
+  onSnapshot(
+    whitelistRef,
+    { includeMetadataChanges: true },
+    (querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'removed') {
+          delete state.docs[change.doc.id]
+        } else {
+          state.docs[change.doc.id] = change.doc.data()
+        }
+      })
+    },
+    console.error,
+    () => (state.fetched = true)
+  )
 }
 
 export const add = async (address: string) => {

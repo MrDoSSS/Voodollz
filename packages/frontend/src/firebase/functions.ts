@@ -16,7 +16,11 @@ export const getAuthToken = httpsCallable<
   string
 >(functions, 'getAuthToken')
 
-export const setDeposit = httpsCallable<number, string>(functions, 'setDeposit')
+export const setDeposit = httpsCallable<number, string>(
+  functions,
+  'setDeposit',
+  { timeout: 180000 }
+)
 
 export const getDataForClaim = httpsCallable<
   void,

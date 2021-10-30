@@ -28,55 +28,56 @@ cwContract.events.EthClaimed(async (err: any, data: EventData) => {
   batch.commit()
 })
 
-export const setDeposit = functions.https.onCall(async (deposit, context) => {
-  if (!context.auth?.token?.admin) {
-    throw new functions.https.HttpsError('unauthenticated', '')
-  }
+export const setDeposit = functions
+  .runWith({ timeoutSeconds: 180 })
+  .https.onCall(async (deposit, context) => {
+    if (!context.auth?.token?.admin) {
+      throw new functions.https.HttpsError('unauthenticated', '')
+    }
 
-  const tokenCount = await voodollzContract.methods
-    .totalSupply()
-    .call()
-    .then(parseInt)
-  const amountPerToken = deposit / tokenCount
-  const tokenIds = await voodollzContract
-    .getPastEvents('Transfer', {
-      filter: {
-        from: '0x0000000000000000000000000000000000000000',
-      },
-      fromBlock: 0,
+    const tokenCount = await voodollzContract.methods
+      .totalSupply()
+      .call()
+      .then(parseInt)
+    const amountPerToken = deposit / tokenCount
+    const tokenIds = await voodollzContract
+      .getPastEvents('Transfer', {
+        filter: {
+          from: '0x0000000000000000000000000000000000000000',
+        },
+        fromBlock: 0,
+      })
+      .then((transfers) => transfers.map((tr: any) => tr.returnValues.tokenId))
+
+    const batch = db.batch()
+    const promises = tokenIds.map((tokenId) => {
+      return new Promise(async (resolve) => {
+        const { docs, empty } = await db
+          .collection('deposits')
+          .where('tokenId', '==', tokenId)
+          .get()
+
+        if (empty) {
+          const doc = db.collection('deposits').doc()
+          batch.set(doc, { tokenId, value: amountPerToken, lockedUntil: false })
+        } else {
+          const [doc] = docs
+          batch.update(doc.ref, {
+            value: firestore.FieldValue.increment(amountPerToken),
+          })
+        }
+
+        resolve(true)
+      })
     })
-    .then((transfers) => transfers.map((tr: any) => tr.returnValues.tokenId))
 
-  const batch = db.batch()
-  const promises = tokenIds.map((tokenId) => {
-    return new Promise(async (resolve) => {
-      const { docs, empty } = await db
-        .collection('deposits')
-        .where('tokenId', '==', tokenId)
-        .get()
+    const method = cwContract.methods.deposit()
+    const value = web3.utils.toWei(deposit.toString())
+    const gas = await estimateGas(method, 0, { value })
 
-      if (empty) {
-        const doc = db.collection('deposits').doc()
-        batch.set(doc, { tokenId, value: amountPerToken, lockedUntil: false })
-      } else {
-        const [doc] = docs
-        batch.update(doc.ref, {
-          value: firestore.FieldValue.increment(amountPerToken),
-        })
-      }
-
-      resolve(true)
-    })
+    await method.send({ value, gas })
+    await Promise.all(promises).then(() => batch.commit())
   })
-
-  await Promise.all(promises).then(() => batch.commit())
-
-  const method = cwContract.methods.deposit()
-  const value = web3.utils.toWei(deposit.toString())
-  const gas = await estimateGas(method, 0, { value })
-
-  await method.send({ value, gas })
-})
 
 export const getDataForClaim = functions.https.onCall(async (_, context) => {
   if (!context.auth?.uid) {

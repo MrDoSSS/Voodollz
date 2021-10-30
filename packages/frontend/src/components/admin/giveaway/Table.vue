@@ -15,9 +15,9 @@ admin.giveaway.fetch()
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, i) in admin.giveaway.state.docs" :key="i">
+      <tr v-for="(item, id) in admin.giveaway.state.docs" :key="id">
         <td>{{ item.address }}</td>
-        <td>{{ item.tokenIds }}</td>
+        <td>{{ item.tokenId }}</td>
       </tr>
     </tbody>
   </table>

@@ -31,7 +31,7 @@ export const init = () => {
     if (!auth.currentUser) return
 
     const { claims } = await auth.currentUser.getIdTokenResult()
-    // state.admin = claims.admin
+    state.admin = claims.admin as unknown as boolean
   })
 }
 

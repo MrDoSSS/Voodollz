@@ -1,21 +1,35 @@
 import { reactive } from 'vue'
 import { voodollz } from '@/store/contract'
 import { estimateGas, getMintedTokenIds } from '@/utils'
-import { giveawayRef, serializeDocs } from '@/firebase/firestore'
-import { getDocs, addDoc } from 'firebase/firestore'
+import { giveawayRef } from '@/firebase/firestore'
+import { onSnapshot, addDoc } from 'firebase/firestore'
 
 type State = {
-  docs: Voodollz.DocDataWithId<Voodollz.GiveawayDocData>[]
+  docs: Record<string, Voodollz.GiveawayDocData>
+  fetched: boolean
 }
 
 export const state = reactive<State>({
-  docs: [],
+  docs: {},
+  fetched: false,
 })
-
 export const fetch = async () => {
-  const querySnapshot = await getDocs(giveawayRef)
-  const docs = serializeDocs(querySnapshot)
-  state.docs = docs
+  onSnapshot(
+    giveawayRef,
+    { includeMetadataChanges: true },
+    (querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        console.log(change)
+        if (change.type === 'removed') {
+          delete state.docs[change.doc.id]
+        } else {
+          state.docs[change.doc.id] == change.doc.data()
+        }
+      })
+    },
+    console.error,
+    () => (state.fetched = true)
+  )
 }
 
 export const give = async (address: string) => {
@@ -28,7 +42,7 @@ export const give = async (address: string) => {
     maxFeePerGas: null,
   })
 
-  const tokenIds = getMintedTokenIds(res.events.Transfer)
+  const [tokenId] = getMintedTokenIds(res.events.Transfer)
 
-  return addDoc(giveawayRef, { address, tokenIds })
+  return addDoc(giveawayRef, { address, tokenId })
 }
