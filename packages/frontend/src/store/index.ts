@@ -22,10 +22,10 @@ export const createStore = () => {
   }
 
   const init = async () => {
-    await contract.init()
-    metamask.init()
-    metamask.connect()
-    auth.init()
+    // await contract.init()
+    // metamask.init()
+    // metamask.connect()
+    // auth.init()
   }
 
   const install = (app: App) => {

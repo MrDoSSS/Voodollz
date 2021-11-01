@@ -57,8 +57,9 @@ const claim = async () => {
               A collection of 3D generated characters knitted to perfection and
               coming alive on the Ethereum blockchain.
             </p>
-            <button @click="mint">Mint Voodollz</button>
-            <button @click="claim" class="mt-2">Claim</button>
+            <img src="/home/head-btn.png" alt="" class="d-none d-lg-inline" />
+            <!-- <button @click="mint">Mint Voodollz</button>
+            <button @click="claim" class="mt-2">Claim</button> -->
           </div>
         </div>
       </div>
