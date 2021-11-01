@@ -18,7 +18,7 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
-    uint256 public constant PRICE = 0.1 ether;
+    uint256 public constant PRICE = 0.0999 ether;
     
     Counters.Counter private _tokenIdCounter = Counters.Counter(_RESERVED);
     Counters.Counter private _giveTokenIdCounter;
