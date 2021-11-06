@@ -88,7 +88,7 @@ const claim = async () => {
 
   > * {
     position: relative;
-    z-index: 1;
+    z-index: 100;
   }
 
   &::after {
@@ -99,6 +99,7 @@ const claim = async () => {
     right: 0;
     bottom: 0;
     background: url('/home/head.png') no-repeat 10rem 100% / contain;
+    z-index: 1;
 
     @media screen and (max-width: 1699px) {
       background-position: -10rem 100%;

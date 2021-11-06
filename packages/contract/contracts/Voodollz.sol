@@ -13,12 +13,15 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     using ECDSA for bytes32;
     using Counters for Counters.Counter;
 
-    uint256 private constant _RESERVED = 150;
+    uint256 private constant _RESERVED = 100;
 
     string public baseTokenURI;
     
     uint256 public constant MAX_TOKEN_COUNT = 10000;
     uint256 public constant PRICE = 0.0999 ether;
+    uint256 public constant PRESALE_PRICE = 0.075 ether;
+
+    mapping(address => uint8) public tokenOwnersCounter;
     
     Counters.Counter private _tokenIdCounter = Counters.Counter(_RESERVED);
     Counters.Counter private _giveTokenIdCounter;
@@ -30,28 +33,31 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Mint methods
 
-    function _mintVoodollz(uint256 _amount) private whenNotPaused {
-        require(balanceOf(msg.sender) + _amount <= 5, "Can only mint 5 tokens at address");
+    function _mintVoodollz(uint256 _amount, uint256 _price) private whenNotPaused {
         require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
-        require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
+        require(_amount <= 3, "Can only mint 3 tokens at a time");
+        require(msg.value >= _price * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
             if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
                 _tokenIdCounter.increment();
                 _safeMint(msg.sender, _tokenIdCounter.current());
+                tokenOwnersCounter[msg.sender] += 1;
             }
         }
     }
 
     function mint(uint256 _amount) public payable whenNotPresaled {
-        _mintVoodollz(_amount);
+        require(tokenOwnersCounter[msg.sender] + _amount <= 5, "Can only mint 5 tokens at address");
+        _mintVoodollz(_amount, PRICE);
     }
 
     function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
         address signer = recoverSigner(msg.sender, _signature);
         require(signer == owner(), "Not authorized to mint");
+        require(tokenOwnersCounter[msg.sender] + _amount <= 6, "Can only mint 6 tokens at address");
 
-        _mintVoodollz(_amount);
+        _mintVoodollz(_amount, PRESALE_PRICE);
     }
 
     // Give methods
