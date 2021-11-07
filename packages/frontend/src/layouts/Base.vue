@@ -1,9 +1,5 @@
 <script lang="ts" setup>
 import { onBeforeMount, onBeforeUnmount } from 'vue'
-import MintSuccessModal from '@/components/modals/MintSuccess.vue'
-import MintErrorModal from '@/components/modals/MintError.vue'
-import MintPresaleErrorModal from '@/components/modals/MintPresaleError.vue'
-import Loader from '@/components/Loader.vue'
 import { useStore } from '@/store'
 
 const { metamask } = useStore()
@@ -14,11 +10,6 @@ onBeforeUnmount(() => document.documentElement.classList.remove('base-layout'))
 </script>
 
 <template>
-  <Loader />
-  <MintSuccessModal />
-  <MintErrorModal />
-  <MintPresaleErrorModal />
-
   <div class="admin-btn position-fixed z-index" v-if="metamask.state.isOwner">
     <router-link class="btn btn-success" :to="{ name: 'admin-index' }"
       >Admin panel</router-link

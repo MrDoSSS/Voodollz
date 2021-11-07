@@ -408,7 +408,7 @@
         1860
       ],
       "ERC165": [
-        2454
+        2528
       ],
       "ERC721": [
         1011
@@ -417,7 +417,7 @@
         1483
       ],
       "IERC165": [
-        2466
+        2540
       ],
       "IERC721": [
         1127
@@ -432,7 +432,7 @@
         1145
       ],
       "Strings": [
-        2063
+        2137
       ]
     },
     "id": 1484,
@@ -519,8 +519,8 @@
           1011,
           1541,
           1127,
-          2454,
-          2466,
+          2528,
+          2540,
           1860
         ],
         "name": "ERC721Enumerable",
@@ -723,7 +723,7 @@
           {
             "baseFunctions": [
               289,
-              2465
+              2539
             ],
             "body": {
               "id": 1194,
@@ -933,7 +933,7 @@
                   "id": 1176,
                   "name": "IERC165",
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 2466,
+                  "referencedDeclaration": 2540,
                   "src": "986:7:5"
                 },
                 {
@@ -4462,7 +4462,7 @@
         1860
       ],
       "ERC165": [
-        2454
+        2528
       ],
       "ERC721": [
         1011
@@ -4471,7 +4471,7 @@
         1483
       ],
       "IERC165": [
-        2466
+        2540
       ],
       "IERC721": [
         1127
@@ -4486,7 +4486,7 @@
         1145
       ],
       "Strings": [
-        2063
+        2137
       ]
     },
     "id": 1484,
@@ -4573,8 +4573,8 @@
           1011,
           1541,
           1127,
-          2454,
-          2466,
+          2528,
+          2540,
           1860
         ],
         "name": "ERC721Enumerable",
@@ -4777,7 +4777,7 @@
           {
             "baseFunctions": [
               289,
-              2465
+              2539
             ],
             "body": {
               "id": 1194,
@@ -4987,7 +4987,7 @@
                   "id": 1176,
                   "name": "IERC165",
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 2466,
+                  "referencedDeclaration": 2540,
                   "src": "986:7:5"
                 },
                 {
@@ -8512,7 +8512,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-27T11:03:05.730Z",
+  "updatedAt": "2021-11-07T14:36:17.146Z",
   "devdoc": {
     "details": "This implements an optional extension of {ERC721} defined in the EIP that adds enumerability of all the token ids in the contract as well as all token ids owned by each account.",
     "kind": "dev",

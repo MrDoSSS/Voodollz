@@ -39,8 +39,17 @@ export const init = async () => {
       .then(parseInt)
     state.presaled = await voodollz.methods.presaled().call()
     state.paused = await voodollz.methods.paused().call()
-    state.price = await voodollz.methods.PRICE().call()
-    state.maxTokenCount = await voodollz.methods.MAX_TOKEN_COUNT().call()
+
+    if (state.presaled) {
+      state.price = await voodollz.methods.PRESALE_PRICE().call().then(parseInt)
+    } else {
+      state.price = await voodollz.methods.PRICE().call().then(parseInt)
+    }
+
+    state.maxTokenCount = await voodollz.methods
+      .MAX_TOKEN_COUNT()
+      .call()
+      .then(parseInt)
   } catch (e) {
     state.active = false
     console.error(e)
@@ -80,7 +89,7 @@ export const mint = async (amount: number) => {
 export const presaleMint = async (amount: number, signature: string) => {
   try {
     const method = voodollz.methods.presaleMint(amount, signature)
-    const value = (state.price / 2) * amount
+    const value = state.price * amount
     const gas = await estimateGas(method, 200000 * amount, { value })
 
     const res = await method.send({

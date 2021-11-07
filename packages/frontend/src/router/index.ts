@@ -17,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'home',
         component: Home,
       },
+      {
+        path: '/mint',
+        name: 'mint',
+        component: () => import('@/views/Mint.vue'),
+      },
     ],
   },
   {

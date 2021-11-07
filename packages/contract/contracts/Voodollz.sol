@@ -17,14 +17,19 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     string public baseTokenURI;
     
-    uint256 public constant MAX_TOKEN_COUNT = 10000;
-    uint256 public constant PRICE = 0.0999 ether;
-    uint256 public constant PRESALE_PRICE = 0.075 ether;
+    uint256 public constant MAX_TOKEN_COUNT = 9999;
+    uint256 public constant PRICE = 0.08 ether;
+    uint256 public constant PRESALE_PRICE = 0.07 ether;
 
     mapping(address => uint8) public tokenOwnersCounter;
+    mapping(address => uint8) public presaleTokenOwnersCounter;
     
     Counters.Counter private _tokenIdCounter = Counters.Counter(_RESERVED);
     Counters.Counter private _giveTokenIdCounter;
+
+    address t1 = 0x2A71996Eb62E15f76C78d90B6ce901527e47aB0D;
+    address t2 = 0x5795FCC85820DDfD20A310CB2705700082FDFD52;
+    address t3 = 0x3570c9572Ec101f220196a275E7F57c5FfBD3f47;
 
     constructor(string memory _baseTokenURI) ERC721("Zllodoov", "ZLDV")  {
         setBaseURI(_baseTokenURI);
@@ -33,10 +38,11 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     // Mint methods
 
-    function _mintVoodollz(uint256 _amount, uint256 _price) private whenNotPaused {
+    function mint(uint256 _amount) public payable whenNotPresaled whenNotPaused {
+        require(tokenOwnersCounter[msg.sender] + _amount <= 5, "Can only mint 5 tokens at address");
         require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
         require(_amount <= 3, "Can only mint 3 tokens at a time");
-        require(msg.value >= _price * _amount, "Ether value sent is not correct");
+        require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
             if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
@@ -47,17 +53,22 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         }
     }
 
-    function mint(uint256 _amount) public payable whenNotPresaled {
-        require(tokenOwnersCounter[msg.sender] + _amount <= 5, "Can only mint 5 tokens at address");
-        _mintVoodollz(_amount, PRICE);
-    }
-
-    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
+    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled whenNotPaused {        
         address signer = recoverSigner(msg.sender, _signature);
-        require(signer == owner(), "Not authorized to mint");
-        require(tokenOwnersCounter[msg.sender] + _amount <= 6, "Can only mint 6 tokens at address");
 
-        _mintVoodollz(_amount, PRESALE_PRICE);
+        require(signer == owner(), "Not authorized to mint");
+        require(presaleTokenOwnersCounter[msg.sender] + _amount <= 6, "Can only mint 6 tokens at address");
+        require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
+        require(_amount <= 3, "Can only mint 3 tokens at a time");
+        require(msg.value >= PRESALE_PRICE * _amount, "Ether value sent is not correct");
+    
+        for(uint256 i = 0; i < _amount; i++) {
+            if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
+                _tokenIdCounter.increment();
+                _safeMint(msg.sender, _tokenIdCounter.current());
+                presaleTokenOwnersCounter[msg.sender] += 1;
+            }
+        }
     }
 
     // Give methods
@@ -93,6 +104,14 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
         return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
     }
     
+    function withdraw() external onlyOwner {
+        uint256 _balance = address(this).balance / 100;
+
+        require(payable(t1).send(_balance * 2));
+        require(payable(t2).send(_balance * 48));
+        require(payable(t3).send(_balance * 50));
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return baseTokenURI;
     }

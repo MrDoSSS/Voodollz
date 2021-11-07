@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import { useStore } from '@/store'
-import { emitter } from '@/event-bus'
 import { whitelistRef, serializeDocs } from '@/firebase/firestore'
 import { query, getDocs, where } from '@firebase/firestore'
 
@@ -15,17 +14,25 @@ const getSignature = async (address: string) => {
 export const useMint = () => {
   const { metamask, contract, auth } = useStore()
   const amount = ref(1)
+  const status = ref<'init' | 'error' | 'success' | 'presale-error'>('init')
+  const loading = ref(false)
 
   const inc = () =>
-    (amount.value = amount.value >= 20 ? amount.value : amount.value + 1)
+    (amount.value = amount.value >= 3 ? amount.value : amount.value + 1)
   const dec = () =>
     (amount.value = amount.value <= 1 ? amount.value : amount.value - 1)
 
-  const price = computed(() => contract.priceInEth.value * amount.value)
+  const price = computed(() =>
+    contract.web3.utils.fromWei(
+      (contract.state.price * amount.value).toString()
+    )
+  )
+
+  const reset = () => (status.value = 'init')
 
   const mint = async () => {
     try {
-      emitter.emit('Loader:toggle', true)
+      loading.value = true
 
       if (!metamask.state.connected) {
         await metamask.connect()
@@ -37,7 +44,8 @@ export const useMint = () => {
         const signature = await getSignature(metamask.state.currentAccount!)
 
         if (!signature) {
-          return emitter.emit('MintPresaleErrorModal:toggle', true)
+          status.value = 'presale-error'
+          return
         }
 
         await contract.presaleMint(amount.value, signature)
@@ -45,14 +53,14 @@ export const useMint = () => {
         await contract.mint(amount.value)
       }
 
-      emitter.emit('MintSuccessModal:toggle', true)
+      status.value = 'success'
     } catch (e) {
       console.log(e)
-      emitter.emit('MintErrorModal:toggle', true)
+      status.value = 'error'
     } finally {
-      emitter.emit('Loader:toggle', false)
+      loading.value = false
     }
   }
 
-  return { amount, mint, dec, inc, price }
+  return { amount, mint, dec, inc, price, status, loading, reset }
 }
