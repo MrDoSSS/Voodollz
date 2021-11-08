@@ -37,7 +37,7 @@ const handleAccountsChanged = async () => {
   state.currentAccount = window.ethereum.selectedAddress
   state.connected = !!window.ethereum.selectedAddress
   voodollz.options.from = state.currentAccount
-  cw.options.from = state.currentAccount
+  // cw.options.from = state.currentAccount
 
   const owner = await voodollz.methods.owner().call()
   state.isOwner = owner.toLowerCase() === state.currentAccount.toLowerCase()

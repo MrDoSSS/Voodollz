@@ -1,7 +1,8 @@
 import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
+import { Contract } from 'web3-eth-contract'
 import { abi as voodollzAbi } from '../../contract/build/contracts/Voodollz.json'
-import { abi as cwAbi } from '../../contract/build/contracts/CommunityWallet.json'
+// import { abi as cwAbi } from '../../contract/build/contracts/CommunityWallet.json'
 import * as functions from 'firebase-functions'
 
 const { voodollz } = functions.config()
@@ -30,10 +31,11 @@ export const voodollzContract = new web3.eth.Contract(
   }
 )
 
-export const cwContract = new web3.eth.Contract(
-  cwAbi as unknown as AbiItem,
-  voodollz.cw_contract_address,
-  {
-    from: account.address,
-  }
-)
+export let cwContract: Contract
+// export const cwContract = new web3.eth.Contract(
+//   cwAbi as unknown as AbiItem,
+//   voodollz.cw_contract_address,
+//   {
+//     from: account.address,
+//   }
+// )

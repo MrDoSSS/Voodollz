@@ -29,9 +29,9 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
 
     address t1 = 0x2A71996Eb62E15f76C78d90B6ce901527e47aB0D;
     address t2 = 0x5795FCC85820DDfD20A310CB2705700082FDFD52;
-    address t3 = 0x3570c9572Ec101f220196a275E7F57c5FfBD3f47;
+    address t3 = 0x333EaDE7E56F6e55F7dA16050efCCbD24303E99A;
 
-    constructor(string memory _baseTokenURI) ERC721("Zllodoov", "ZLDV")  {
+    constructor(string memory _baseTokenURI) ERC721("Voodollz", "VDLZ")  {
         setBaseURI(_baseTokenURI);
         presale();
     }

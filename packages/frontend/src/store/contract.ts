@@ -3,7 +3,7 @@ import { Contract } from 'web3-eth-contract'
 import { AbiItem } from 'web3-utils'
 import { reactive, computed } from 'vue'
 import { abi as voodollzAbi } from '../../../contract/build/contracts/Voodollz.json'
-import { abi as cwAbi } from '../../../contract/build/contracts/CommunityWallet.json'
+// import { abi as cwAbi } from '../../../contract/build/contracts/CommunityWallet.json'
 import { estimateGas, getMintedTokenIds } from '@/utils'
 import { getDataForClaim } from '@/firebase/functions'
 
@@ -29,10 +29,10 @@ export const init = async () => {
       voodollzAbi as unknown as AbiItem,
       import.meta.env.VITE_VOODOLLZ_CONTRACT_ADDRESS
     )
-    cw = new web3.eth.Contract(
-      cwAbi as unknown as AbiItem,
-      import.meta.env.VITE_CW_CONTRACT_ADDRESS
-    )
+    // cw = new web3.eth.Contract(
+    //   cwAbi as unknown as AbiItem,
+    //   import.meta.env.VITE_CW_CONTRACT_ADDRESS
+    // )
     state.totalSupply = await voodollz.methods
       .totalSupply()
       .call()
