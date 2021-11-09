@@ -111,7 +111,7 @@ const { contract, metamask } = useStore()
                     </button>
                     <a
                       class="mint__opensea"
-                      href="https://opensea.io/collection/voodollzclub"
+                      href="https://opensea.io/collection/voodollz"
                       target="_blank"
                     >
                       <img src="/opensea.svg" />
