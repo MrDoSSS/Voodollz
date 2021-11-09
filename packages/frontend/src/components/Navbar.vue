@@ -22,13 +22,13 @@
         </ul>
         <ul class="top-navbar_nav_anchors d-none d-md-flex">
           <li>
-            <a href="#roadmap">Roadmap</a>
+            <a href="/#roadmap">Roadmap</a>
           </li>
           <li>
-            <a href="#team">Team</a>
+            <a href="/#team">Team</a>
           </li>
           <li>
-            <a href="#community">Community</a>
+            <a href="/#community">Community</a>
           </li>
         </ul>
       </nav>

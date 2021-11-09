@@ -14,7 +14,9 @@ const getSignature = async (address: string) => {
 export const useMint = () => {
   const { metamask, contract, auth } = useStore()
   const amount = ref(1)
-  const status = ref<'init' | 'error' | 'success' | 'presale-error'>('init')
+  const status = ref<
+    'init' | 'error' | 'success' | 'presale-error' | 'amount-error'
+  >('init')
   const loading = ref(false)
 
   const inc = () =>
@@ -48,8 +50,26 @@ export const useMint = () => {
           return
         }
 
+        const tokenCount = await contract.voodollz.methods
+          .presaleTokenOwnersCounter(metamask.state.currentAccount!)
+          .call()
+
+        if (tokenCount + amount.value > 6) {
+          status.value = 'amount-error'
+          return
+        }
+
         await contract.presaleMint(amount.value, signature)
       } else {
+        const tokenCount = await contract.voodollz.methods
+          .tokenOwnersCounter(metamask.state.currentAccount!)
+          .call()
+
+        if (tokenCount + amount.value > 5) {
+          status.value = 'amount-error'
+          return
+        }
+
         await contract.mint(amount.value)
       }
 

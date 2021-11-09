@@ -93,14 +93,30 @@ const { contract, metamask } = useStore()
                     Back
                   </button>
                 </template>
+                <template v-else-if="status === 'amount-error'">
+                  <h1>O-oops!</h1>
+                  <p class="mb-2">Exceeds maximum Voodollz tokens at address</p>
+                  <button class="mint__buy_control_btn" @click="reset">
+                    Back
+                  </button>
+                </template>
                 <template v-else-if="status === 'success'">
                   <h1>Congratz!</h1>
                   <p class="mb-2">
                     You can view your Voodoll on Opensea&nbsp;Marketplace!
                   </p>
-                  <button class="mint__buy_control_btn" @click="reset">
-                    Back
-                  </button>
+                  <div class="d-flex">
+                    <button class="mint__buy_control_btn me-2" @click="reset">
+                      Back
+                    </button>
+                    <a
+                      class="mint__opensea"
+                      href="https://opensea.io/collection/voodollzclub"
+                      target="_blank"
+                    >
+                      <img src="/opensea.svg" />
+                    </a>
+                  </div>
                 </template>
               </div>
             </div>
@@ -147,6 +163,12 @@ const { contract, metamask } = useStore()
 
   @include media-breakpoint-down(md) {
     padding-bottom: 2rem;
+  }
+
+  &__opensea {
+    img {
+      max-height: 7.7rem;
+    }
   }
 
   &__buy {

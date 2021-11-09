@@ -26,3 +26,8 @@ export const getDataForClaim = httpsCallable<
   void,
   { amount: number; nonce: string; signature: string }
 >(functions, 'getDataForClaim')
+
+export const importWhitelist = httpsCallable<{ addresses: string[] }, void>(
+  functions,
+  'importWhitelist'
+)
