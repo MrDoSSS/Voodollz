@@ -134,7 +134,7 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.0999') }
         )
       )
 
@@ -146,17 +146,42 @@ contract('Voodollz', () => {
       await truffleAssert.fails(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.0999') }
         )
       )
     })
 
-    it('when amount > 5 must be fails', async () => {
+    it('when amount > 3 must be fails', async () => {
       await truffleAssert.fails(
         contract.mint(
-          6,
+          4,
           { from: holderOne.address, value: web3.utils.toWei('0.3') }
         )
+      )
+    })
+
+    it('when token owners count > 5 must be fails', async () => {
+      await truffleAssert.passes(
+        contract.mint(
+          3,
+          { from: holderOne.address, value: web3.utils.toWei('0.3') }
+        )
+      )
+
+      await truffleAssert.passes(
+        contract.mint(
+          2,
+          { from: holderOne.address, value: web3.utils.toWei('0.3') }
+        )
+      )
+
+      await truffleAssert.fails(
+        contract.mint(
+          1,
+          { from: holderOne.address, value: web3.utils.toWei('0.0999') }
+        ),
+        truffleAssert.ErrorType.REVERT,
+        'Can only mint 5 tokens at address'
       )
     })
 
@@ -192,7 +217,7 @@ contract('Voodollz', () => {
         contract.presaleMint(
           1,
           validSign,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.075') }
         )
       )
 
@@ -204,8 +229,36 @@ contract('Voodollz', () => {
         contract.presaleMint(
           1,
           unvalidSign,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.075') }
         )
+      )
+    })
+
+    it('when token owners count > 6 must be fails', async () => {
+      await truffleAssert.passes(
+        contract.presaleMint(
+          3,
+          validSign,
+          { from: holderOne.address, value: web3.utils.toWei('0.225') }
+        )
+      )
+
+      await truffleAssert.passes(
+        contract.presaleMint(
+          3,
+          validSign,
+          { from: holderOne.address, value: web3.utils.toWei('0.225') }
+        )
+      )
+
+      await truffleAssert.fails(
+        contract.presaleMint(
+          1,
+          validSign,
+          { from: holderOne.address, value: web3.utils.toWei('0.075') }
+        ),
+        truffleAssert.ErrorType.REVERT,
+        'Can only mint 6 tokens at address'
       )
     })
 
@@ -217,7 +270,7 @@ contract('Voodollz', () => {
           contract.presaleMint(
             1,
             validSign,
-            { from: holderOne.address, value: web3.utils.toWei('0.05') }
+            { from: holderOne.address, value: web3.utils.toWei('0.075') }
           )
         )
       })
@@ -234,67 +287,6 @@ contract('Voodollz', () => {
     })
   })
 
-  describe('deposit', () => {
-    beforeEach(() => contract.unpresale())
-
-    it('must be set claimable eth', async () => {
-      await truffleAssert.passes(
-        contract.mint(
-          2,
-          { from: holderOne.address, value: web3.utils.toWei('0.1') }
-        )
-      )
-
-      await truffleAssert.passes(
-        contract.mint(
-          1,
-          { from: holderTwo.address, value: web3.utils.toWei('0.05') }
-        )
-      )
-
-      await truffleAssert.passes(
-        contract.deposit(
-          { value: web3.utils.toWei('6') }
-        )
-      )
-
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderOne.address)), 4)
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderTwo.address)), 2)
-
-      truffleAssert.eventEmitted(
-        await contract.claim(
-          { from: holderOne.address }
-        ),
-        'EthClaimed',
-      )
-
-      assert.equal(web3.utils.fromWei(await contract.claimableBalance(holderOne.address)), 0)
-    })
-
-    it('when no owners must be fails', async () => {
-      await truffleAssert.fails(
-        contract.deposit(
-          { value: web3.utils.toWei('6') }
-        )
-      )
-    })
-
-    it('when eth value is 0 must be fails', async () => {
-      await truffleAssert.passes(
-        contract.mint(
-          1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
-        )
-      )
-
-      await truffleAssert.fails(
-        contract.deposit(
-          { value: web3.utils.toWei('0') }
-        )
-      )
-    })
-  })
-
   describe('burn', () => {
     beforeEach(() => contract.unpresale())
     
@@ -302,13 +294,13 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.0999') }
         )
       )
 
       assert.equal(await contract.balanceOf(holderOne.address), 1)
 
-      await truffleAssert.passes(contract.burn(151, { from: holderOne.address }))
+      await truffleAssert.passes(contract.burn(101, { from: holderOne.address }))
 
       assert.equal(await contract.balanceOf(holderOne.address), 0)
     })
@@ -317,11 +309,11 @@ contract('Voodollz', () => {
       await truffleAssert.passes(
         contract.mint(
           1,
-          { from: holderOne.address, value: web3.utils.toWei('0.05') }
+          { from: holderOne.address, value: web3.utils.toWei('0.0999') }
         )
       )
 
-      await truffleAssert.fails(contract.burn(151, { from: holderTwo.address }))
+      await truffleAssert.fails(contract.burn(101, { from: holderTwo.address }))
     })
   })
 })

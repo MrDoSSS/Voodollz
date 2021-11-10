@@ -6,10 +6,10 @@ export const giveawayConverter: FirestoreDataConverter<Voodollz.GiveawayDocData>
       return modelObject
     },
     fromFirestore(snapshot, options) {
-      const { address, tokenIds } = snapshot.data(options)
+      const { address, tokenId } = snapshot.data(options)
       return {
         address,
-        tokenIds,
+        tokenId,
       }
     },
   }

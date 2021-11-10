@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { onBeforeMount, onBeforeUnmount } from 'vue'
+import { useStore } from '@/store'
+
+const { metamask } = useStore()
 
 onBeforeMount(() => document.documentElement.classList.add('base-layout'))
 
@@ -7,6 +10,12 @@ onBeforeUnmount(() => document.documentElement.classList.remove('base-layout'))
 </script>
 
 <template>
+  <div class="admin-btn position-fixed z-index" v-if="metamask.state.isOwner">
+    <router-link class="btn btn-success" :to="{ name: 'admin-index' }"
+      >Admin panel</router-link
+    >
+  </div>
+
   <router-view />
 </template>
 
@@ -26,5 +35,11 @@ html.base-layout {
   h6 {
     font-family: 'Risque', cursive;
   }
+}
+
+.admin-btn {
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
 }
 </style>

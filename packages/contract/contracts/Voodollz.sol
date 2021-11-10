@@ -1,117 +1,83 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./Presalable.sol";
 
 contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     using ECDSA for bytes32;
+    using Counters for Counters.Counter;
 
-    event EthDeposited(uint256 amount);
-    event EthClaimed(address to, uint256 amount);
-
-    uint256 private constant _RESERVED = 150;
-    uint256 private _reservedLeft = _RESERVED;
-    mapping(uint256 => uint256) private _claimableEth;
+    uint256 private constant _RESERVED = 100;
 
     string public baseTokenURI;
     
-    uint256 public constant MAX_TOKEN_COUNT = 10000;
-    uint256 public constant PRICE = 0.05 ether;
+    uint256 public constant MAX_TOKEN_COUNT = 9999;
+    uint256 public constant PRICE = 0.08 ether;
+    uint256 public constant PRESALE_PRICE = 0.07 ether;
 
-    constructor(string memory _baseTokenURI) ERC721("Voodollz", "Voodollz")  {
+    mapping(address => uint8) public tokenOwnersCounter;
+    mapping(address => uint8) public presaleTokenOwnersCounter;
+    
+    Counters.Counter private _tokenIdCounter = Counters.Counter(_RESERVED);
+    Counters.Counter private _giveTokenIdCounter;
+
+    address t1 = 0x2A71996Eb62E15f76C78d90B6ce901527e47aB0D;
+    address t2 = 0x5795FCC85820DDfD20A310CB2705700082FDFD52;
+    address t3 = 0x333EaDE7E56F6e55F7dA16050efCCbD24303E99A;
+
+    constructor(string memory _baseTokenURI) ERC721("Voodollz", "VDLZ")  {
         setBaseURI(_baseTokenURI);
         presale();
     }
 
     // Mint methods
 
-    function _mintVoodollz(uint256 _amount) private whenNotPaused {
-        require(balanceOf(msg.sender) + _amount <= 5, "Can only mint 5 tokens at address");
-        require(totalSupply() + _amount <= MAX_TOKEN_COUNT - _RESERVED, "Exceeds maximum Voodollz supply");
+    function mint(uint256 _amount) public payable whenNotPresaled whenNotPaused {
+        require(tokenOwnersCounter[msg.sender] + _amount <= 5, "Can only mint 5 tokens at address");
+        require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
+        require(_amount <= 3, "Can only mint 3 tokens at a time");
         require(msg.value >= PRICE * _amount, "Ether value sent is not correct");
     
         for(uint256 i = 0; i < _amount; i++) {
-            uint256 mintIndex = totalSupply() + _RESERVED + 1;
-            if (totalSupply() < MAX_TOKEN_COUNT) {
-                _safeMint(msg.sender, mintIndex);
+            if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
+                _tokenIdCounter.increment();
+                _safeMint(msg.sender, _tokenIdCounter.current());
+                tokenOwnersCounter[msg.sender] += 1;
             }
         }
     }
 
-    function mint(uint256 _amount) public payable whenNotPresaled {
-        _mintVoodollz(_amount);
-    }
-
-    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled {        
+    function presaleMint(uint256 _amount, bytes memory _signature) public payable whenPresaled whenNotPaused {        
         address signer = recoverSigner(msg.sender, _signature);
+
         require(signer == owner(), "Not authorized to mint");
-
-        _mintVoodollz(_amount);
-    }
-
-    function recoverSigner(address _wallet, bytes memory _signature) public pure returns (address){
-        return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
+        require(presaleTokenOwnersCounter[msg.sender] + _amount <= 6, "Can only mint 6 tokens at address");
+        require(_tokenIdCounter.current() + _amount <= MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
+        require(_amount <= 3, "Can only mint 3 tokens at a time");
+        require(msg.value >= PRESALE_PRICE * _amount, "Ether value sent is not correct");
+    
+        for(uint256 i = 0; i < _amount; i++) {
+            if (_tokenIdCounter.current() < MAX_TOKEN_COUNT) {
+                _tokenIdCounter.increment();
+                _safeMint(msg.sender, _tokenIdCounter.current());
+                presaleTokenOwnersCounter[msg.sender] += 1;
+            }
+        }
     }
 
     // Give methods
     
-    function giveAway(address _to) public onlyOwner whenNotPaused {
-        require(totalSupply() < MAX_TOKEN_COUNT, "Exceeds maximum Voodollz supply");
-        require(_reservedLeft > 0, "Exceeds reserved Voodollz supply");
+    function giveAway(address _to) public onlyOwner {
+        require(_giveTokenIdCounter.current() < _RESERVED, "Exceeds reserved Voodollz supply");
 
-        _safeMint(_to, _RESERVED - _reservedLeft + 1);
-
-        _reservedLeft -= 1;
-    }
-
-    // Community wallet methods
-
-    function deposit() public payable onlyOwner {
-        uint256 tokenCount = totalSupply();
-
-        require(tokenCount > 0, "No owners");
-        require(msg.value > 0, "Ether value sent is not correct");
-
-        uint256 claimableAmountPerToken = msg.value / tokenCount;
-
-        for(uint256 i = 0; i < tokenCount; i++) {
-            _claimableEth[tokenByIndex(i)] += claimableAmountPerToken;
-        }
-
-        emit EthDeposited(msg.value);
-    }
-
-    function claimableBalance(address owner) public view returns (uint256) {
-        uint256 balance = 0;
-        uint256 numTokens = balanceOf(owner);
-
-        for(uint256 i = 0; i < numTokens; i++) {
-            balance += _claimableEth[tokenOfOwnerByIndex(owner, i)];
-        }
-
-        return balance;
-    }
-
-    function claim() public {
-        uint256 amount = 0;
-        uint256 numTokens = balanceOf(msg.sender);
-
-        for(uint256 i = 0; i < numTokens; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(msg.sender, i);
-            amount += _claimableEth[tokenId];
-            _claimableEth[tokenId] = 0;
-        }
-
-        require(amount > 0, "There is no amount left to claim");
-
-        require(payable(msg.sender).send(amount));
-
-        emit EthClaimed(msg.sender, amount);
+        _giveTokenIdCounter.increment();
+        _safeMint(_to, _giveTokenIdCounter.current());
     }
 
     // Burn methods
@@ -122,7 +88,30 @@ contract Voodollz is ERC721Enumerable, Ownable, Pausable, Presalable {
     }
 
     // Service methods
+
+    function tokensOfOwner(address _owner) public view returns(uint256[] memory){
+        uint256 tokenCount = balanceOf(_owner);
+        uint256[] memory tokensId = new uint256[](tokenCount);
+
+        for(uint256 i; i < tokenCount; i++){
+            tokensId[i] = tokenOfOwnerByIndex(_owner, i);
+        }
+
+        return tokensId;
+    }
+
+    function recoverSigner(address _wallet, bytes memory _signature) private pure returns (address){
+        return keccak256(abi.encodePacked(_wallet)).toEthSignedMessageHash().recover(_signature);
+    }
     
+    function withdraw() external onlyOwner {
+        uint256 _balance = address(this).balance / 100;
+
+        require(payable(t1).send(_balance * 2));
+        require(payable(t2).send(_balance * 48));
+        require(payable(t3).send(_balance * 50));
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return baseTokenURI;
     }

@@ -10,11 +10,24 @@ module.exports = {
       port: 8545,
       network_id: "*",
     },
+    ropsten: {
+      provider() {
+        return new HDWalletProvider(
+          {
+            privateKeys: [process.env.PK],
+            providerOrUrl: `wss://ropsten.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          }
+        )
+      },
+      network_id: 3
+    },
     rinkeby: {
       provider() {
         return new HDWalletProvider(
-          process.env.MNEMONIC,
-          `wss://rinkeby.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          {
+            privateKeys: [process.env.PK],
+            providerOrUrl: `wss://rinkeby.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          }
         )
       },
       network_id: 4
@@ -22,8 +35,10 @@ module.exports = {
     goerli: {
       provider() {
         return new HDWalletProvider(
-          process.env.MNEMONIC,
-          `wss://goerli.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          {
+            privateKeys: [process.env.PK],
+            providerOrUrl: `wss://goerli.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          }
         )
       },
       network_id: 5
@@ -31,13 +46,15 @@ module.exports = {
     mainnet: {
       provider() {
         return new HDWalletProvider(
-          process.env.MNEMONIC,
-          `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          {
+            privateKeys: [process.env.PK],
+            providerOrUrl: `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`
+          }
         )
       },
       network_id: 1,
-      gas: 4888771,
-      gasPrice: web3.utils.toWei('75', 'gwei')
+      gas: 5369683,
+      gasPrice: web3.utils.toWei('80', 'gwei')
     }
   },
   compilers: {

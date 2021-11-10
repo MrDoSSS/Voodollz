@@ -33,5 +33,9 @@ import NavItem from './NavItem.vue'
 <style lang="scss" scoped>
 .sidebar {
   font-size: 1.75em;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
 }
 </style>

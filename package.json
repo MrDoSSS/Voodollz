@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "emulators": "firebase emulators:start",
+    "emulators": "yarn functions:build && firebase emulators:start",
     "ganache": "ganache-cli",
     "frontend:dev": "yarn --cwd packages/frontend dev",
     "functions:build": "yarn --cwd packages/functions build",

@@ -15,13 +15,14 @@
         </div>
         <ul class="home__footer_nav">
           <li>
-            <a href="#">Home</a>
+            <router-link :to="{ name: 'home' }">Home</router-link>
           </li>
           <li>
-            <a href="#">Terms & Conditions</a>
-          </li>
-          <li>
-            <a href="#">Smart contract</a>
+            <a
+              href="https://etherscan.io/address/0x11f01af6471354cf42768d85e57bf959273b8439"
+              target="_blank"
+              >Smart contract</a
+            >
           </li>
         </ul>
       </div>

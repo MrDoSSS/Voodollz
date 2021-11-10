@@ -15,13 +15,10 @@ admin.whitelist.fetch()
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, i) in admin.whitelist.state.docs" :key="i">
+      <tr v-for="(item, id) in admin.whitelist.state.docs" :key="id">
         <td>{{ item.address }}</td>
         <td class="text-end">
-          <button
-            class="btn btn-danger"
-            @click="admin.whitelist.remove(item.id)"
-          >
+          <button class="btn btn-danger" @click="admin.whitelist.remove(id)">
             <i class="bi bi-trash"></i>
           </button>
         </td>

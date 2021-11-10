@@ -4,7 +4,7 @@ export type DocDataWithId<T> = {
 
 export type GiveawayDocData = {
   address: string
-  tokenIds: string[]
+  tokenId: string
 }
 
 export type WhitelistDocData = {

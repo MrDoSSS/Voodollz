@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { contract } from '@/store/contract'
+import { voodollz, web3 } from '@/store/contract'
 import { estimateGas } from '@/utils'
 
 export const state = reactive({
@@ -13,16 +13,16 @@ export const fetchAll = async () => {
 }
 
 export const fetchPaused = async () => {
-  state.paused = await contract.methods.paused().call()
+  state.paused = await voodollz.methods.paused().call()
 }
 
 export const fetchPresaled = async () => {
-  state.presaled = await contract.methods.presaled().call()
+  state.presaled = await voodollz.methods.presaled().call()
 }
 
 export const setPause = async (pause: boolean) => {
   const methodName = pause ? 'pause' : 'unpause'
-  const method = contract.methods[methodName]()
+  const method = voodollz.methods[methodName]()
   const gas = await estimateGas(method)
 
   return method.send({ gas, maxPriorityFeePerGas: null, maxFeePerGas: null })
@@ -30,8 +30,21 @@ export const setPause = async (pause: boolean) => {
 
 export const setPresale = async (presale: boolean) => {
   const methodName = presale ? 'presale' : 'unpresale'
-  const method = contract.methods[methodName]()
+  const method = voodollz.methods[methodName]()
   const gas = await estimateGas(method)
 
   return method.send({ gas, maxPriorityFeePerGas: null, maxFeePerGas: null })
+}
+
+export const setDeposit = async (amount: string) => {
+  const value = web3.utils.toWei(amount)
+  const method = voodollz.methods.deposit()
+  const gas = await estimateGas(method, 0, { value })
+
+  return method.send({
+    value,
+    gas,
+    maxPriorityFeePerGas: null,
+    maxFeePerGas: null,
+  })
 }
