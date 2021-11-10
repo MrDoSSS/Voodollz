@@ -41,7 +41,8 @@ const { contract, metamask } = useStore()
                   </p>
                   <p class="mb-2">Maximum tokens per transaction: 3</p>
                   <template v-if="!contract.state.active">
-                    <h2>Switch to your eth mainnet</h2>
+                    <h2 class="mb-0">Switch to your eth mainnet</h2>
+                    <p class="ff-risque">or reload page</p>
                   </template>
                   <template v-else-if="metamask.state.metaMaskDetected">
                     <div class="mint__buy_control ff-risque d-flex mb-1">
