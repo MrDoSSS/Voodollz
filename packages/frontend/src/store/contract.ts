@@ -6,6 +6,7 @@ import { abi as voodollzAbi } from '../../../contract/build/contracts/Voodollz.j
 // import { abi as cwAbi } from '../../../contract/build/contracts/CommunityWallet.json'
 import { estimateGas, getMintedTokenIds } from '@/utils'
 import { getDataForClaim } from '@/firebase/functions'
+import { ethereum } from '@/ethereum'
 
 export let web3: Web3, voodollz: Contract, cw: Contract
 
@@ -18,13 +19,14 @@ export const state = reactive({
   paused: false,
   address: import.meta.env.VITE_VOODOLLZ_CONTRACT_ADDRESS,
   active: true,
+  initialized: false,
 })
 
 export const init = async () => {
-  if (!window.ethereum) return
+  if (!ethereum) return
 
   try {
-    web3 = new Web3(window.ethereum)
+    web3 = new Web3(ethereum)
     voodollz = new web3.eth.Contract(
       voodollzAbi as unknown as AbiItem,
       import.meta.env.VITE_VOODOLLZ_CONTRACT_ADDRESS
@@ -50,6 +52,7 @@ export const init = async () => {
       .MAX_TOKEN_COUNT()
       .call()
       .then(parseInt)
+    state.initialized = true
   } catch (e) {
     state.active = false
     console.error(e)

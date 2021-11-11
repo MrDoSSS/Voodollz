@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { useStore } from '@/store'
+import { emitter } from '@/event-bus'
 
 const { admin } = useStore()
 admin.stat.fetchAll()
+
+const withdraw = () => {
+  emitter.emit('Loader:toggle', true)
+  admin.withdraw().finally(() => emitter.emit('Loader:toggle', false))
+}
 </script>
 
 <template>
@@ -13,6 +19,7 @@ admin.stat.fetchAll()
         <div class="card-body">
           <h5 class="card-title">Balance</h5>
           <p class="card-text">{{ admin.stat.state.balance }} eth</p>
+          <button class="btn btn-primary" @click="withdraw">Withdraw</button>
         </div>
       </div>
     </div>

@@ -15,4 +15,5 @@ declare module 'web3/dist/web3.min' {
 interface ImportMetaEnv {
   VITE_VOODOLLZ_CONTRACT_ADDRESS: string
   VITE_CW_CONTRACT_ADDRESS: string
+  VITE_INFURA_PROJECT_ID: string
 }

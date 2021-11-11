@@ -17,8 +17,8 @@ export const auth = getAuth(app)
 export const functions = getFunctions(app)
 export const db = getFirestore(app)
 
-if (import.meta.env.DEV) {
-  connectAuthEmulator(auth, 'http://localhost:9099')
-  connectFunctionsEmulator(functions, 'localhost', 5001)
-  connectFirestoreEmulator(db, 'localhost', 8080)
-}
+// if (import.meta.env.DEV) {
+//   connectAuthEmulator(auth, 'http://localhost:9099')
+//   connectFunctionsEmulator(functions, 'localhost', 5001)
+//   connectFirestoreEmulator(db, 'localhost', 8080)
+// }

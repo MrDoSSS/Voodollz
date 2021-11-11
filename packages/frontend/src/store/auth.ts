@@ -5,7 +5,7 @@ import {
   signOut,
   authStateChanged,
 } from '@/firebase/auth'
-import { state as metamaskState } from '@/store/metamask'
+import { state as walletState } from '@/store/wallet'
 import { web3 } from '@/store/contract'
 import { watch, reactive, computed } from 'vue'
 import { User } from 'firebase/auth'
@@ -22,7 +22,7 @@ export const state = reactive<State>({
 
 export const init = () => {
   watch(
-    () => metamaskState.currentAccount,
+    () => walletState.currentAccount,
     () => signOut()
   )
 
@@ -38,7 +38,7 @@ export const init = () => {
 export const loggedIn = computed(() => !!state.user)
 
 export const signIn = () => {
-  const publicAddress = metamaskState.currentAccount
+  const publicAddress = walletState.currentAccount
 
   if (!publicAddress) return
 

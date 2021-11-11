@@ -7,12 +7,6 @@ interface EthereumProvider extends AbstractProvider {
   selectedAddress: string
 }
 
-declare global {
-  interface Window {
-    ethereum: EthereumProvider
-  }
-}
-
 declare module 'vue' {
   export interface GlobalComponents {
     RouterLink: typeof import('vue-router')['RouterLink']

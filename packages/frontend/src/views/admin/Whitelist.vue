@@ -17,7 +17,7 @@ const importFromCsv = (e: Event) => {
 
   parse<[string, string, string, string]>(file, {
     complete(res) {
-      const data = res.data.map((arr) => arr[1])
+      const data = res.data.map((arr) => arr[1]?.toLowerCase())
       const addresses = data.filter(contract.web3.utils.isAddress)
       importWhitelist({ addresses })
     },

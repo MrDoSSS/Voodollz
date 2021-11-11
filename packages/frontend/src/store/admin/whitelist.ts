@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 import { whitelistRef } from '@/firebase/firestore'
 import { addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 import { web3 } from '@/store/contract'
-import { state as metamaskState } from '@/store/metamask'
+import { state as walletState } from '@/store/wallet'
 
 type State = {
   docs: Record<string, Voodollz.WhitelistDocData>
@@ -39,7 +39,7 @@ export const add = async (address: string) => {
 
   const signature = await web3.eth.personal.sign(
     web3.utils.keccak256(address),
-    metamaskState.currentAccount!,
+    walletState.currentAccount!,
     ''
   )
 

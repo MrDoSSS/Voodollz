@@ -1,5 +1,5 @@
 import { reactive, readonly, App, inject } from 'vue'
-import * as metamask from './metamask'
+import * as wallet from './wallet'
 import * as contract from './contract'
 import * as admin from './admin'
 import * as auth from './auth'
@@ -15,16 +15,13 @@ export const createStore = () => {
 
   const store = {
     state: readonly(state),
-    metamask,
+    wallet,
     contract,
     admin,
     auth,
   }
 
   const init = async () => {
-    await contract.init()
-    metamask.init()
-    metamask.connect()
     auth.init()
   }
 

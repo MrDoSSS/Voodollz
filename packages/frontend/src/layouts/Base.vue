@@ -2,7 +2,7 @@
 import { onBeforeMount, onBeforeUnmount } from 'vue'
 import { useStore } from '@/store'
 
-const { metamask } = useStore()
+const { wallet } = useStore()
 
 onBeforeMount(() => document.documentElement.classList.add('base-layout'))
 
@@ -10,7 +10,7 @@ onBeforeUnmount(() => document.documentElement.classList.remove('base-layout'))
 </script>
 
 <template>
-  <div class="admin-btn position-fixed z-index" v-if="metamask.state.isOwner">
+  <div class="admin-btn position-fixed z-index" v-if="wallet.state.isOwner">
     <router-link class="btn btn-success" :to="{ name: 'admin-index' }"
       >Admin panel</router-link
     >

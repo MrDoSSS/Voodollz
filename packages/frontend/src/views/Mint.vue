@@ -2,9 +2,31 @@
 import Navbar from '@/components/Navbar.vue'
 import { useMint } from '@/composables/mint'
 import { useStore } from '@/store'
+import { setMetamaskProvider, setWalletLinkProvider } from '@/ethereum'
 
 const { inc, dec, amount, price, mint, status, loading, reset } = useMint()
-const { contract, metamask } = useStore()
+const { contract, wallet } = useStore()
+
+const connectMetamask = () => {
+  setMetamaskProvider()
+  connect()
+}
+
+const connectCoinbase = () => {
+  setWalletLinkProvider()
+  connect()
+}
+
+const connect = async () => {
+  try {
+    loading.value = true
+    await contract.init()
+    wallet.init()
+    await wallet.connect()
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 <template>
   <div class="mint d-flex flex-column">
@@ -31,7 +53,34 @@ const { contract, metamask } = useStore()
             <div class="col-12 col-md-7">
               <div class="mint__buy_desc" :class="{ loading }">
                 <div class="spinner-border" v-if="loading"></div>
-                <template v-if="status === 'init'">
+                <template
+                  v-if="!contract.state.initialized || !wallet.state.connected"
+                >
+                  <h1 class="mb-0">Connect</h1>
+                  <p class="mb-3">Choice your wallet:</p>
+                  <div class="mint__connect d-flex flex-column">
+                    <div class="d-flex mb-2 align-items-center">
+                      <img src="/metamask.png" />
+                      <button
+                        class="mint__connect_btn ms-1 flex-grow-1"
+                        @click="connectMetamask"
+                      >
+                        Metamask
+                      </button>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <img src="/coinbase.png" />
+                      <button
+                        class="mint__connect_btn ms-1 flex-grow-1"
+                        @click="connectCoinbase"
+                      >
+                        Coinbase
+                      </button>
+                    </div>
+                  </div>
+                </template>
+
+                <template v-else-if="status === 'init'">
                   <h1 class="mb-1">
                     {{ contract.state.presaled ? 'Pre-sale' : 'Sale' }}
                   </h1>
@@ -44,7 +93,11 @@ const { contract, metamask } = useStore()
                     <h2 class="mb-0">Switch to your eth mainnet</h2>
                     <p class="ff-risque">or reload page</p>
                   </template>
-                  <template v-else-if="metamask.state.metaMaskDetected">
+                  <template
+                    v-else-if="
+                      wallet.state.connected || wallet.state.metaMaskDetected
+                    "
+                  >
                     <div class="mint__buy_control ff-risque d-flex mb-1">
                       <div
                         class="
@@ -70,13 +123,6 @@ const { contract, metamask } = useStore()
                     </div>
                     <p>Total: {{ price }} ETH + Gas Fee</p>
                   </template>
-                  <a
-                    class="mint__buy_control_metamask"
-                    v-else
-                    href="https://metamask.io/"
-                    target="_blank"
-                    >Install MetaMask</a
-                  >
                 </template>
                 <template v-else-if="status === 'error'">
                   <h1>O-oops!</h1>
@@ -294,6 +340,22 @@ const { contract, metamask } = useStore()
           color: #fff;
         }
       }
+    }
+  }
+
+  &__connect {
+    max-width: 28rem;
+    &_btn {
+      font-size: 2.4rem;
+      background-color: #000;
+      padding: 1.2rem 5rem;
+      border-radius: 1.4rem;
+      color: #fff;
+      line-height: 1;
+      min-width: 9.7rem;
+      text-align: center;
+      border: none;
+      font-family: 'Risque', cursive;
     }
   }
 }

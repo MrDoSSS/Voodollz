@@ -15,11 +15,20 @@ import Navbar from '@/components/Navbar.vue'
               coming alive on the Ethereum blockchain.
             </p>
             <div class="home__head_mint text-center">
-              <router-link
-                class="home__head_mint_btn ff-risque"
-                :to="{ name: 'mint' }"
-                >Go Mint!</router-link
-              >
+              <div class="d-flex align-items-center">
+                <router-link
+                  class="home__head_mint_btn ff-risque me-2"
+                  :to="{ name: 'mint' }"
+                  >Go Mint!</router-link
+                >
+                <a
+                  class="home__head_opensea"
+                  href="https://opensea.io/collection/voodollz"
+                  target="_blank"
+                >
+                  <img src="/opensea.svg" />
+                </a>
+              </div>
               <p class="mt-2">During pre-sale...</p>
             </div>
           </div>
@@ -46,6 +55,12 @@ import Navbar from '@/components/Navbar.vue'
 
   @include media-breakpoint-down(lg) {
     padding: 2rem 0 57rem;
+  }
+
+  &_opensea {
+    img {
+      max-height: 6rem;
+    }
   }
 
   > * {
@@ -90,7 +105,7 @@ import Navbar from '@/components/Navbar.vue'
     max-width: 32rem;
 
     &_btn {
-      padding: 1.6rem 9rem;
+      padding: 1.6rem 5rem;
       background-color: #000;
       border-radius: 1.4rem;
       font-size: 3.6rem;
