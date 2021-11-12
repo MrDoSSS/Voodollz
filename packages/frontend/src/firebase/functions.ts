@@ -31,3 +31,8 @@ export const importWhitelist = httpsCallable<{ addresses: string[] }, void>(
   functions,
   'importWhitelist'
 )
+
+export const whiteListForAll = httpsCallable<void, string>(
+  functions,
+  'whiteListForAll'
+)

@@ -25,3 +25,15 @@ export const importWhitelist = functions.https.onCall(async (data, context) => {
 
   await batch.commit()
 })
+
+export const whiteListForAll = functions.https.onCall(async (data, context) => {
+  if (!context.auth?.uid) {
+    throw new functions.https.HttpsError('unauthenticated', '')
+  }
+
+  const { signature } = account.sign(
+    web3.utils.keccak256(web3.utils.encodePacked(context.auth.uid)!)
+  )
+
+  return signature
+})
