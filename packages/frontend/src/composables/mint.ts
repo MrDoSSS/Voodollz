@@ -2,7 +2,6 @@ import { ref, computed } from 'vue'
 import { useStore } from '@/store'
 import { whitelistRef, serializeDocs } from '@/firebase/firestore'
 import { query, getDocs, where } from '@firebase/firestore'
-import { whiteListForAll } from '@/firebase/functions'
 
 const getSignature = async (address: string) => {
   const q = query(whitelistRef, where('address', '==', address.toLowerCase()))
@@ -44,7 +43,7 @@ export const useMint = () => {
       if (contract.state.presaled) {
         await auth.signIn()
 
-        const { data: signature } = await whiteListForAll()
+        const signature = await getSignature(wallet.state.currentAccount!)
 
         if (!signature) {
           status.value = 'presale-error'
