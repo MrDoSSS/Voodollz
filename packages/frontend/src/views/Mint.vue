@@ -3,9 +3,12 @@ import Navbar from '@/components/Navbar.vue'
 import { useMint } from '@/composables/mint'
 import { useStore } from '@/store'
 import { setMetamaskProvider, setWalletLinkProvider } from '@/ethereum'
+import { ref, onMounted, onUnmounted } from 'vue'
+import dayjs from 'dayjs'
 
 const { inc, dec, amount, price, mint, status, loading, reset } = useMint()
 const { contract, wallet } = useStore()
+const countdown = ref<{ hours: string; minutes: string; seconds: string }>()
 
 const connectMetamask = () => {
   setMetamaskProvider()
@@ -27,6 +30,40 @@ const connect = async () => {
     loading.value = false
   }
 }
+
+const calculateCountdown = () => {
+  const countdownDate = dayjs(Date.UTC(2021, 11, 1, 20, 0, 0))
+  const hours = Math.floor(countdownDate.diff(dayjs(), 'h', true))
+  const minutes = Math.floor(
+    countdownDate.diff(dayjs(), 'm', true) - hours * 60
+  )
+  const seconds = Math.ceil(
+    countdownDate.diff(dayjs(), 's') - minutes * 60 - hours * 3600
+  )
+
+  countdown.value = {
+    hours: String(hours).padStart(2, '0'),
+    minutes: String(minutes).padStart(2, '0'),
+    seconds: String(seconds).padStart(2, '0'),
+  }
+
+  if (hours <= 0 && minutes <= 0 && seconds <= 0) {
+    clearInterval(interval)
+    countdown.value = undefined
+  }
+}
+
+let interval: NodeJS.Timeout
+
+onMounted(() => (interval = setInterval(calculateCountdown, 1000)))
+
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval)
+  }
+})
+
+calculateCountdown()
 </script>
 <template>
   <div class="mint d-flex flex-column">
@@ -51,54 +88,15 @@ const connect = async () => {
               </div>
             </div>
             <div class="col-12 col-md-7">
-              <div class="mint__buy_desc" :class="{ loading }">
+              <div class="mint__buy_desc h-100" :class="{ loading }">
                 <div class="spinner-border" v-if="loading"></div>
-                <template
-                  v-if="!contract.state.initialized || !wallet.state.connected"
+                <div
+                  class="d-flex flex-column justify-content-center h-100"
+                  v-if="countdown"
                 >
-                  <h1 class="mb-0">Connect</h1>
-                  <p class="mb-3">Choice your wallet:</p>
-                  <div class="mint__connect d-flex flex-column">
-                    <div class="d-flex mb-2 align-items-center">
-                      <img src="/metamask.png" />
-                      <button
-                        class="mint__connect_btn ms-1 flex-grow-1"
-                        @click="connectMetamask"
-                      >
-                        Metamask
-                      </button>
-                    </div>
-                    <div class="d-flex align-items-center">
-                      <img src="/coinbase.png" />
-                      <button
-                        class="mint__connect_btn ms-1 flex-grow-1"
-                        @click="connectCoinbase"
-                      >
-                        Coinbase
-                      </button>
-                    </div>
-                  </div>
-                </template>
-
-                <template v-else-if="status === 'init'">
-                  <h1 class="mb-1">
-                    {{ contract.state.presaled ? 'Pre-sale' : 'Sale' }}
-                  </h1>
-                  <p class="mb-0">
-                    Maximum tokens per wallet:
-                    {{ contract.state.presaled ? 6 : 5 }}
-                  </p>
-                  <p class="mb-2">Maximum tokens per transaction: 3</p>
-                  <template v-if="!contract.state.active">
-                    <h2 class="mb-0">Switch to your eth mainnet</h2>
-                    <p class="ff-risque">or reload page</p>
-                  </template>
-                  <template
-                    v-else-if="
-                      wallet.state.connected || wallet.state.metaMaskDetected
-                    "
-                  >
-                    <div class="mint__buy_control ff-risque d-flex mb-1">
+                  <h1 class="mb-2">Coming soon</h1>
+                  <div class="row">
+                    <div class="col-4">
                       <div
                         class="
                           mint__buy_control_amount
@@ -107,63 +105,154 @@ const connect = async () => {
                           justify-content-center
                         "
                       >
-                        {{ amount }}
+                        {{ countdown?.hours }}
                       </div>
-                      <div class="d-flex flex-column">
-                        <button class="mint__buy_control_inc" @click="inc">
-                          +
-                        </button>
-                        <button class="mint__buy_control_inc" @click="dec">
-                          -
-                        </button>
-                      </div>
-                      <button class="mint__buy_control_btn" @click="mint">
-                        Mint
-                      </button>
                     </div>
-                    <p>Total: {{ price }} ETH + Gas Fee</p>
+                    <div class="col-4">
+                      <div
+                        class="
+                          mint__buy_control_amount
+                          d-flex
+                          align-items-center
+                          justify-content-center
+                        "
+                      >
+                        {{ countdown?.minutes }}
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div
+                        class="
+                          mint__buy_control_amount
+                          d-flex
+                          align-items-center
+                          justify-content-center
+                        "
+                      >
+                        {{ countdown?.seconds }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <template v-else>
+                  <template
+                    v-if="
+                      !contract.state.initialized || !wallet.state.connected
+                    "
+                  >
+                    <h1 class="mb-0">Connect</h1>
+                    <p class="mb-3">Choice your wallet:</p>
+                    <div class="mint__connect d-flex flex-column">
+                      <div class="d-flex mb-2 align-items-center">
+                        <img src="/metamask.png" />
+                        <button
+                          class="mint__connect_btn ms-1 flex-grow-1"
+                          @click="connectMetamask"
+                        >
+                          Metamask
+                        </button>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <img src="/coinbase.png" />
+                        <button
+                          class="mint__connect_btn ms-1 flex-grow-1"
+                          @click="connectCoinbase"
+                        >
+                          Coinbase
+                        </button>
+                      </div>
+                    </div>
                   </template>
-                </template>
-                <template v-else-if="status === 'error'">
-                  <h1>O-oops!</h1>
-                  <p class="mb-2">Something going wrong! Please, try again.</p>
-                  <button class="mint__buy_control_btn" @click="reset">
-                    Back
-                  </button>
-                </template>
-                <template v-else-if="status === 'presale-error'">
-                  <h1>O-oops!</h1>
-                  <p class="mb-2">
-                    Mint now available only for presale members!
-                  </p>
-                  <button class="mint__buy_control_btn" @click="reset">
-                    Back
-                  </button>
-                </template>
-                <template v-else-if="status === 'amount-error'">
-                  <h1>O-oops!</h1>
-                  <p class="mb-2">Exceeds maximum Voodollz tokens at address</p>
-                  <button class="mint__buy_control_btn" @click="reset">
-                    Back
-                  </button>
-                </template>
-                <template v-else-if="status === 'success'">
-                  <h1>Congratz!</h1>
-                  <p class="mb-2">
-                    You can view your Voodoll on Opensea&nbsp;Marketplace!
-                  </p>
-                  <div class="d-flex">
-                    <button class="mint__buy_control_btn me-2" @click="reset">
+
+                  <template v-else-if="status === 'init'">
+                    <h1 class="mb-1">
+                      {{ contract.state.presaled ? 'Pre-sale' : 'Sale' }}
+                    </h1>
+                    <p class="mb-0">
+                      Maximum tokens per wallet:
+                      {{ contract.state.presaled ? 6 : 5 }}
+                    </p>
+                    <p class="mb-2">Maximum tokens per transaction: 3</p>
+                    <template v-if="!contract.state.active">
+                      <h2 class="mb-0">Switch to your eth mainnet</h2>
+                      <p class="ff-risque">or reload page</p>
+                    </template>
+                    <template
+                      v-else-if="
+                        wallet.state.connected || wallet.state.metaMaskDetected
+                      "
+                    >
+                      <div class="mint__buy_control ff-risque d-flex mb-1">
+                        <div
+                          class="
+                            mint__buy_control_amount
+                            d-flex
+                            align-items-center
+                            justify-content-center
+                          "
+                        >
+                          {{ amount }}
+                        </div>
+                        <div class="d-flex flex-column">
+                          <button class="mint__buy_control_inc" @click="inc">
+                            +
+                          </button>
+                          <button class="mint__buy_control_inc" @click="dec">
+                            -
+                          </button>
+                        </div>
+                        <button class="mint__buy_control_btn" @click="mint">
+                          Mint
+                        </button>
+                      </div>
+                      <p>Total: {{ price }} ETH + Gas Fee</p>
+                    </template>
+                  </template>
+                  <template v-else-if="status === 'error'">
+                    <h1>O-oops!</h1>
+                    <p class="mb-2">
+                      Something going wrong! Please, try again.
+                    </p>
+                    <button class="mint__buy_control_btn" @click="reset">
                       Back
                     </button>
-                    <a
-                      class="mint__opensea"
-                      href="https://opensea.io/collection/voodollz"
-                      target="_blank"
-                    >
-                      <img src="/opensea.svg" />
-                    </a>
-                  </div>
+                  </template>
+                  <template v-else-if="status === 'presale-error'">
+                    <h1>O-oops!</h1>
+                    <p class="mb-2">
+                      Mint now available only for presale members!
+                    </p>
+                    <button class="mint__buy_control_btn" @click="reset">
+                      Back
+                    </button>
+                  </template>
+                  <template v-else-if="status === 'amount-error'">
+                    <h1>O-oops!</h1>
+                    <p class="mb-2">
+                      Exceeds maximum Voodollz tokens at address
+                    </p>
+                    <button class="mint__buy_control_btn" @click="reset">
+                      Back
+                    </button>
+                  </template>
+                  <template v-else-if="status === 'success'">
+                    <h1>Congratz!</h1>
+                    <p class="mb-2">
+                      You can view your Voodoll on Opensea&nbsp;Marketplace!
+                    </p>
+                    <div class="d-flex">
+                      <button class="mint__buy_control_btn me-2" @click="reset">
+                        Back
+                      </button>
+                      <a
+                        class="mint__opensea"
+                        href="https://opensea.io/collection/voodollz"
+                        target="_blank"
+                      >
+                        <img src="/opensea.svg" />
+                      </a>
+                    </div>
+                  </template>
                 </template>
               </div>
             </div>
