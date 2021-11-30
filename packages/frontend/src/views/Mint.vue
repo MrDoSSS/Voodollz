@@ -94,12 +94,14 @@ calculateCountdown()
                   class="d-flex flex-column justify-content-center h-100"
                   v-if="countdown"
                 >
-                  <h1 class="mb-2">Coming soon</h1>
+                  <h1 class="mb-1 mb-md-2 text-center text-md-start">
+                    Coming soon
+                  </h1>
                   <div class="row">
                     <div class="col-4">
                       <div
                         class="
-                          mint__buy_control_amount
+                          mint__buy_control_countdown
                           d-flex
                           align-items-center
                           justify-content-center
@@ -111,7 +113,7 @@ calculateCountdown()
                     <div class="col-4">
                       <div
                         class="
-                          mint__buy_control_amount
+                          mint__buy_control_countdown
                           d-flex
                           align-items-center
                           justify-content-center
@@ -123,7 +125,7 @@ calculateCountdown()
                     <div class="col-4">
                       <div
                         class="
-                          mint__buy_control_amount
+                          mint__buy_control_countdown
                           d-flex
                           align-items-center
                           justify-content-center
@@ -336,12 +338,12 @@ calculateCountdown()
       padding: 5rem 8rem;
       position: relative;
 
-      @include media-breakpoint-down(md) {
-        padding: 2rem 2rem 3rem;
-      }
-
       @include media-breakpoint-down(lg) {
         padding: 4rem 2rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        padding: 2rem 2rem 4rem;
       }
 
       .spinner-border {
@@ -372,7 +374,8 @@ calculateCountdown()
 
       &_amount,
       &_btn,
-      &_metamask {
+      &_metamask,
+      &_countdown {
         font-size: 6.2rem;
         background-color: #000;
         padding: 0.2rem 3rem;
@@ -428,6 +431,12 @@ calculateCountdown()
         &:hover {
           color: #fff;
         }
+      }
+
+      &_countdown {
+        min-width: unset;
+        width: 100%;
+        padding: 0.5rem 0;
       }
     }
   }
