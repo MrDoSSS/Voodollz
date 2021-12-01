@@ -36,3 +36,8 @@ export const whiteListForAll = httpsCallable<void, string>(
   functions,
   'whiteListForAll'
 )
+
+export const deleteAllFromWhitelist = httpsCallable<void, void>(
+  functions,
+  'deleteAllFromWhitelist'
+)

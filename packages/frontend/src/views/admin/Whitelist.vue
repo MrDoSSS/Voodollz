@@ -5,6 +5,7 @@ import { ref } from 'vue'
 import { importWhitelist } from '@/firebase/functions'
 import { parse } from 'papaparse'
 import { useStore } from '@/store'
+import { deleteAllFromWhitelist } from '@/firebase/functions'
 
 const { contract } = useStore()
 const addModal = ref()
@@ -23,6 +24,14 @@ const importFromCsv = (e: Event) => {
     },
   })
 }
+
+const deleteAll = () => {
+  const isSure = confirm('You are sure?')
+
+  if (isSure) {
+    deleteAllFromWhitelist()
+  }
+}
 </script>
 
 <template>
@@ -31,10 +40,16 @@ const importFromCsv = (e: Event) => {
     <button class="btn btn-success btn-sm" @click="addModal.show">
       <i class="bi bi-plus"></i>
     </button>
-    <label class="btn btn-primary btn-sm ms-auto">
-      <i class="bi bi-upload me-1"></i>
-      Import <input type="file" class="d-none" @input="importFromCsv" />
-    </label>
+    <div class="ms-auto">
+      <button class="btn btn-danger btn-sm me-1" @click="deleteAll">
+        <i class="bi bi-trash"></i>
+        Delete all
+      </button>
+      <label class="btn btn-primary btn-sm">
+        <i class="bi bi-upload me-1"></i>
+        Import <input type="file" class="d-none" @input="importFromCsv" />
+      </label>
+    </div>
   </div>
 
   <WhitelistTable />
