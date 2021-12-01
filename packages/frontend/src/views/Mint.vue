@@ -55,7 +55,7 @@ const calculateCountdown = () => {
 }
 
 const calculateTimer = () => {
-  const timerDate = dayjs(Date.UTC(2021, 11, 1, 21, 0, 0))
+  const timerDate = dayjs(Date.UTC(2021, 11, 2, 2, 0, 0))
   const minutes = Math.floor(timerDate.diff(dayjs(), 'm', true))
   const seconds = Math.ceil(timerDate.diff(dayjs(), 's') - minutes * 60)
 
@@ -96,7 +96,7 @@ calculateTimer()
     <Navbar />
     <div class="flex-grow-1 d-flex align-items-center">
       <div class="custom-container">
-        <div class="mint__buy overflow-hidden">
+        <div class="mint__buy">
           <div class="row g-0">
             <div class="col-12 col-md-5">
               <div class="mint__buy_img d-flex justify-content-center">
@@ -164,31 +164,9 @@ calculateTimer()
                 </div>
                 <template v-else>
                   <template v-if="timer">
-                    <div class="row mb-1">
-                      <div class="col-4">
-                        <div
-                          class="
-                            mint__buy_control_countdown
-                            d-flex
-                            align-items-center
-                            justify-content-center
-                          "
-                        >
-                          {{ timer?.minutes }}
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div
-                          class="
-                            mint__buy_control_countdown
-                            d-flex
-                            align-items-center
-                            justify-content-center
-                          "
-                        >
-                          {{ timer?.seconds }}
-                        </div>
-                      </div>
+                    <div class="mint__buy_control_timer ff-risque">
+                      <span>Time for mint</span>
+                      <div>{{ timer?.minutes }}:{{ timer?.seconds }}</div>
                     </div>
                   </template>
                   <template
@@ -354,7 +332,7 @@ calculateTimer()
   }
 
   @include media-breakpoint-down(md) {
-    padding-bottom: 2rem;
+    padding-bottom: 4rem;
   }
 
   &__opensea {
@@ -386,6 +364,13 @@ calculateTimer()
     &_img {
       background-color: #000;
       height: 100%;
+      border-top-left-radius: 7rem;
+      border-top-right-radius: 7rem;
+
+      @include media-breakpoint-up(md) {
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 7rem;
+      }
     }
 
     &_desc {
@@ -491,6 +476,34 @@ calculateTimer()
         min-width: unset;
         width: 100%;
         padding: 0.5rem 0;
+      }
+
+      &_timer {
+        position: absolute;
+        bottom: -7rem;
+        right: -3rem;
+        padding: 2rem 5rem;
+        border-radius: 5rem;
+        background-color: #000;
+        color: #fff;
+
+        @include media-breakpoint-down(md) {
+          right: 1rem;
+          padding: 1rem 3rem;
+          bottom: -5rem;
+        }
+
+        div {
+          font-size: 5rem;
+          font-weight: bold;
+          line-height: 1;
+          width: 16rem;
+
+          @include media-breakpoint-down(md) {
+            font-size: 3rem;
+            width: 10rem;
+          }
+        }
       }
     }
   }
