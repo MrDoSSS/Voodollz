@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 const { inc, dec, amount, price, mint, status, loading, reset } = useMint()
 const { contract, wallet } = useStore()
 const countdown = ref<{ hours: string; minutes: string; seconds: string }>()
+const timer = ref<{ minutes: string; seconds: string }>()
 
 const connectMetamask = () => {
   setMetamaskProvider()
@@ -47,23 +48,48 @@ const calculateCountdown = () => {
     seconds: String(seconds).padStart(2, '0'),
   }
 
-  if (hours <= 0 && minutes <= 0 && seconds <= 0) {
-    clearInterval(interval)
+  if ((hours <= 0 && minutes <= 0 && seconds <= 0) || hours < 0) {
+    clearInterval(countdownInterval)
     countdown.value = undefined
   }
 }
 
-let interval: NodeJS.Timeout
+const calculateTimer = () => {
+  const timerDate = dayjs(Date.UTC(2021, 11, 1, 21, 0, 0))
+  const minutes = Math.floor(timerDate.diff(dayjs(), 'm', true))
+  const seconds = Math.ceil(timerDate.diff(dayjs(), 's') - minutes * 60)
 
-onMounted(() => (interval = setInterval(calculateCountdown, 1000)))
+  timer.value = {
+    minutes: String(minutes).padStart(2, '0'),
+    seconds: String(seconds).padStart(2, '0'),
+  }
+
+  if (minutes <= 0 && seconds <= 0) {
+    clearInterval(timerInterval)
+    timer.value = undefined
+  }
+}
+
+let countdownInterval: NodeJS.Timeout
+let timerInterval: NodeJS.Timeout
+
+onMounted(() => {
+  countdownInterval = setInterval(calculateCountdown, 1000)
+  timerInterval = setInterval(calculateTimer, 1000)
+})
 
 onUnmounted(() => {
-  if (interval) {
-    clearInterval(interval)
+  if (countdownInterval) {
+    clearInterval(countdownInterval)
+  }
+
+  if (timerInterval) {
+    clearInterval(timerInterval)
   }
 })
 
 calculateCountdown()
+calculateTimer()
 </script>
 <template>
   <div class="mint d-flex flex-column">
@@ -137,6 +163,34 @@ calculateCountdown()
                   </div>
                 </div>
                 <template v-else>
+                  <template v-if="timer">
+                    <div class="row mb-1">
+                      <div class="col-4">
+                        <div
+                          class="
+                            mint__buy_control_countdown
+                            d-flex
+                            align-items-center
+                            justify-content-center
+                          "
+                        >
+                          {{ timer?.minutes }}
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div
+                          class="
+                            mint__buy_control_countdown
+                            d-flex
+                            align-items-center
+                            justify-content-center
+                          "
+                        >
+                          {{ timer?.seconds }}
+                        </div>
+                      </div>
+                    </div>
+                  </template>
                   <template
                     v-if="
                       !contract.state.initialized || !wallet.state.connected
