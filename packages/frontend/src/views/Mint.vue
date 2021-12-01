@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 const { inc, dec, amount, price, mint, status, loading, reset } = useMint()
 const { contract, wallet } = useStore()
 const countdown = ref<{ hours: string; minutes: string; seconds: string }>()
-const timer = ref<{ minutes: string; seconds: string }>()
+const timer = ref<{ hours: string; minutes: string; seconds: string }>()
 
 const connectMetamask = () => {
   setMetamaskProvider()
@@ -56,10 +56,14 @@ const calculateCountdown = () => {
 
 const calculateTimer = () => {
   const timerDate = dayjs(Date.UTC(2021, 11, 2, 2, 0, 0))
-  const minutes = Math.floor(timerDate.diff(dayjs(), 'm', true))
-  const seconds = Math.ceil(timerDate.diff(dayjs(), 's') - minutes * 60)
+  const hours = Math.floor(timerDate.diff(dayjs(), 'h', true))
+  const minutes = Math.floor(timerDate.diff(dayjs(), 'm', true) - hours * 60)
+  const seconds = Math.ceil(
+    timerDate.diff(dayjs(), 's') - minutes * 60 - hours * 3600
+  )
 
   timer.value = {
+    hours: String(hours).padStart(2, '0'),
     minutes: String(minutes).padStart(2, '0'),
     seconds: String(seconds).padStart(2, '0'),
   }
@@ -166,7 +170,11 @@ calculateTimer()
                   <template v-if="timer">
                     <div class="mint__buy_control_timer ff-risque">
                       <span>Time for mint</span>
-                      <div>{{ timer?.minutes }}:{{ timer?.seconds }}</div>
+                      <div>
+                        {{ timer?.hours }}:{{ timer?.minutes }}:{{
+                          timer?.seconds
+                        }}
+                      </div>
                     </div>
                   </template>
                   <template
@@ -497,11 +505,11 @@ calculateTimer()
           font-size: 5rem;
           font-weight: bold;
           line-height: 1;
-          width: 16rem;
+          width: 18rem;
 
           @include media-breakpoint-down(md) {
             font-size: 3rem;
-            width: 10rem;
+            width: 12rem;
           }
         }
       }
