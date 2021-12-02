@@ -68,7 +68,7 @@ const calculateTimer = () => {
     seconds: String(seconds).padStart(2, '0'),
   }
 
-  if ((minutes <= 0 && seconds <= 0) || minutes < 0) {
+  if ((hours <= 0 && minutes <= 0 && seconds <= 0) || hours < 0) {
     clearInterval(timerInterval)
     timer.value = undefined
   }
