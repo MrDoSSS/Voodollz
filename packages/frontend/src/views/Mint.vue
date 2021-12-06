@@ -9,7 +9,6 @@ import dayjs from 'dayjs'
 const { inc, dec, amount, price, mint, status, loading, reset } = useMint()
 const { contract, wallet } = useStore()
 const countdown = ref<{ hours: string; minutes: string; seconds: string }>()
-const timer = ref<{ hours: string; minutes: string; seconds: string }>()
 
 const connectMetamask = () => {
   setMetamaskProvider()
@@ -33,7 +32,7 @@ const connect = async () => {
 }
 
 const calculateCountdown = () => {
-  const countdownDate = dayjs(Date.UTC(2021, 11, 1, 20, 0, 0))
+  const countdownDate = dayjs(Date.UTC(2021, 11, 7, 5, 0, 0))
   const hours = Math.floor(countdownDate.diff(dayjs(), 'h', true))
   const minutes = Math.floor(
     countdownDate.diff(dayjs(), 'm', true) - hours * 60
@@ -54,46 +53,19 @@ const calculateCountdown = () => {
   }
 }
 
-const calculateTimer = () => {
-  const timerDate = dayjs(Date.UTC(2021, 11, 2, 2, 0, 0))
-  const hours = Math.floor(timerDate.diff(dayjs(), 'h', true))
-  const minutes = Math.floor(timerDate.diff(dayjs(), 'm', true) - hours * 60)
-  const seconds = Math.ceil(
-    timerDate.diff(dayjs(), 's') - minutes * 60 - hours * 3600
-  )
-
-  timer.value = {
-    hours: String(hours).padStart(2, '0'),
-    minutes: String(minutes).padStart(2, '0'),
-    seconds: String(seconds).padStart(2, '0'),
-  }
-
-  if ((hours <= 0 && minutes <= 0 && seconds <= 0) || hours < 0) {
-    clearInterval(timerInterval)
-    timer.value = undefined
-  }
-}
-
 let countdownInterval: NodeJS.Timeout
-let timerInterval: NodeJS.Timeout
 
 onMounted(() => {
   countdownInterval = setInterval(calculateCountdown, 1000)
-  timerInterval = setInterval(calculateTimer, 1000)
 })
 
 onUnmounted(() => {
   if (countdownInterval) {
     clearInterval(countdownInterval)
   }
-
-  if (timerInterval) {
-    clearInterval(timerInterval)
-  }
 })
 
 calculateCountdown()
-calculateTimer()
 </script>
 <template>
   <div class="mint d-flex flex-column">
@@ -167,16 +139,6 @@ calculateTimer()
                   </div>
                 </div>
                 <template v-else>
-                  <template v-if="timer">
-                    <div class="mint__buy_control_timer ff-risque">
-                      <span>Time for mint</span>
-                      <div>
-                        {{ timer?.hours }}:{{ timer?.minutes }}:{{
-                          timer?.seconds
-                        }}
-                      </div>
-                    </div>
-                  </template>
                   <template
                     v-if="
                       !contract.state.initialized || !wallet.state.connected
@@ -208,7 +170,7 @@ calculateTimer()
 
                   <template v-else-if="status === 'init'">
                     <h1 class="mb-1">
-                      {{ contract.state.presaled ? 'Pre-sale' : 'Sale' }}
+                      {{ contract.state.presaled ? 'Pre-sale' : 'Public sale' }}
                     </h1>
                     <p class="mb-0">
                       Maximum tokens per wallet:

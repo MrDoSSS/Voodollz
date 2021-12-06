@@ -29,7 +29,7 @@ import Navbar from '@/components/Navbar.vue'
                   <img src="/opensea.svg" />
                 </a>
               </div>
-              <p class="mt-2">During pre-sale...</p>
+              <p class="mt-2">During public sale...</p>
             </div>
           </div>
         </div>
