@@ -17,12 +17,6 @@
             >
               <p class="text-muted">Founder, Marketing Genius</p>
               <div class="d-flex">
-                <a
-                  href="https://twitter.com/ScaryBerl "
-                  target="_blank"
-                  class="me-1"
-                  ><i class="bi bi-twitter"></i
-                ></a>
                 <a href="#" target="_blank"><i class="bi bi-discord"></i></a>
               </div>
             </div>
@@ -45,12 +39,6 @@
             >
               <p class="text-muted">Artist, Occultist, Preacher</p>
               <div class="d-flex">
-                <a
-                  href="https://twitter.com/egordigitax"
-                  target="_blank"
-                  class="me-1"
-                  ><i class="bi bi-twitter"></i
-                ></a>
                 <a
                   href="https://instagram.com/egordigitax "
                   target="_blank"
@@ -103,12 +91,6 @@
             >
               <p class="text-muted">Abstract Thinker, The Lazy Creative Guy</p>
               <div class="d-flex">
-                <a
-                  href="https://twitter.com/raptablinkzz"
-                  target="_blank"
-                  class="me-1"
-                  ><i class="bi bi-twitter"></i
-                ></a>
                 <a href="#" target="_blank"><i class="bi bi-discord"></i></a>
               </div>
             </div>
@@ -131,12 +113,6 @@
             >
               <p class="text-muted">Development, Transactions, Beer</p>
               <div class="d-flex">
-                <a
-                  href="https://twitter.com/mrdoss"
-                  target="_blank"
-                  class="me-1"
-                  ><i class="bi bi-twitter"></i
-                ></a>
                 <a href="#" target="_blank"><i class="bi bi-discord"></i></a>
               </div>
             </div>

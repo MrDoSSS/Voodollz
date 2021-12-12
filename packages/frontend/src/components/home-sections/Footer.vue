@@ -32,11 +32,6 @@
           blockchain.
         </p>
         <ul class="home__footer_nav d-flex">
-          <li class="me-2">
-            <a href="https://twitter.com/Voodollz_" target="_blank"
-              ><i class="bi bi-twitter"></i
-            ></a>
-          </li>
           <li>
             <a href="https://discord.gg/4txfTDg4z7" target="_blank"
               ><i class="bi bi-discord"></i
